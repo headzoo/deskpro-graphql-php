@@ -26,6 +26,9 @@ composer require deskpro/graphql-php
 use Deskpro\API\GraphQL\GraphQLClient;
 use Deskpro\API\GraphQL\Exception\GrapQLException;
 
+$client = new GraphQLClient('https://deskpro.company.com');
+$client->setAuthKey(1, 'dev-admin-code');
+
 $query = '
     query GetNews ($id: ID!) {
         content_get_news(id: $id) {
@@ -35,15 +38,12 @@ $query = '
     }
 ';
 
-$client = new GraphQLClient('https://deskpro.company.com');
-$client->setAuthKey(1, 'dev-admin-code');
-
 try {
     $data = $client->execute($query, [
         'id' => 1
     ]);
+    print_r($data);
     
-    print_r($data['content_get_news']);
 } catch (GrapQLException $e) {
     echo $e->getMessage();
 }
@@ -72,8 +72,8 @@ try {
     $data = $query->execute([
         'id' => 1
     ]);
+    print_r($data);
     
-    print_r($data['content_get_news']);
 } catch (GrapQLException $e) {
     echo $e->getMessage();
 }
@@ -104,8 +104,8 @@ try {
         'newsId'    => 1,
         'articleId' => 100
     ]);
-    
     print_r($data);
+    
 } catch (GrapQLException $e) {
     echo $e->getMessage();
 }
