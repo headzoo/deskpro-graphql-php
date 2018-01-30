@@ -3,7 +3,8 @@ Deskpro PHP GraphQL Client
 PHP library that queries the Deskpro GraphQL API.
 
 * [Installing](#installing)
-* [Basic Usage](#basic-usage)
+* [Queries](#queries)
+* [Mutations](#mutations)
 * [Default Headers](#default-headers)
 * [Logging](#logging)
 * [Guzzle](#guzzle)
@@ -19,7 +20,7 @@ PHP library that queries the Deskpro GraphQL API.
 composer require deskpro/graphql-php
 ```
 
-## Basic Usage
+## Queries
 
 ```php
 <?php
@@ -188,6 +189,34 @@ query GetNews ($id2: ID!, $id2: ID!) {
             title
             content
     }
+}
+```
+
+## Mutations
+
+```php
+<?php
+use Deskpro\API\GraphQL;
+
+$client = new GraphQL\Client('https://deskpro.company.com');
+$client->setAuthKey(1, 'dev-admin-code');
+
+$mutation = $client->createMutation('UpdateArticle', [
+    '$id'      => 'Int',
+    '$article' => 'ArticleTypeInput!'
+])->field('content_update_articles', 'id: $id, article: $article');
+
+try {
+    $data = $mutation->execute([
+        'id'      => 100,
+        'article' => [
+            'title' => 'Hello, World!'
+        ]
+    ]);
+    print_r($data);
+    
+} catch (GraphQL\Exception\GrapQLException $e) {
+    echo $e->getMessage();
 }
 ```
 

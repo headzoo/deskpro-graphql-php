@@ -11,12 +11,19 @@ interface ClientInterface
     /**
      * @param string $operationName
      * @param array|string $args
-     * @return QueryBuilder
+     * @return QueryBuilderInterface
      */
     public function createQuery($operationName, $args = []);
 
     /**
-     * @param QueryBuilder|string $query
+     * @param string $operationName
+     * @param array|string $args
+     * @return MutationBuilderInterface
+     */
+    public function createMutation($operationName, $args = []);
+
+    /**
+     * @param QueryBuilderInterface|string $query
      * @param array $variables
      *
      * @return array

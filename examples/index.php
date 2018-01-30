@@ -11,7 +11,7 @@ $logger->pushHandler(new StreamHandler('graphql.log', Logger::DEBUG));
 $client = new GraphQL\Client('http://deskpro-dev.com');
 $client->setLogger($logger);
 
-$query = $client->createQuery('GetNews', [
+/*$query = $client->createQuery('GetNews', [
     '$newsId'    => 'ID!',
     '$articleId' => 'ID!',
 ])->field('content_get_news', 'id: $newsId', [
@@ -24,14 +24,21 @@ $query = $client->createQuery('GetNews', [
         'id',
         'title'
     ]
-]);
+]);*/
 
-$data = $query->execute([
-    'newsId'    => 1,
-    'articleId' => 100
+$mutation = $client->createMutation('UpdateArticle', [
+    '$id'      => 'Int',
+    '$article' => 'ArticleTypeInput!'
+])->field('content_update_articles', 'id: $id, article: $article');
+
+$data = $mutation->execute([
+    'id'      => 100,
+    'article' => [
+        'title' => 'Hello, World!'
+    ]
 ]);
 dump($data);
 die();
-$data = $query->getQuery();
+$data = $mutation->getMutation();
 echo $data;
 die("\n");

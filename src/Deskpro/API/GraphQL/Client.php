@@ -85,6 +85,14 @@ class Client implements ClientInterface
     /**
      * {@inheritdoc}
      */
+    public function createMutation($operationName, $args = [])
+    {
+        return new MutationBuilder($this, $operationName, $args);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function execute($query, array $variables = [])
     {
         $query = trim((string)$query);
