@@ -251,4 +251,26 @@ class ClientTest extends TestCase
             'id' => 101
         ]);
     }
+
+    /**
+     * @expectedException \Deskpro\API\GraphQL\Exception\NotFoundException
+     */
+    public function testExecuteThrowsNotFound()
+    {
+        $body = json_encode([
+            'errors' => [
+                ['message' => 'Not Found', 'field' => 'chats_get_agent_chats']
+            ]
+        ]);
+
+        $resp = new Response(200, [], $body);
+        $this->httpClient
+            ->expects($this->once())
+            ->method('send')
+            ->will($this->returnValue($resp));
+
+        $this->fixture->execute('', [
+            'id' => 101
+        ]);
+    }
 }

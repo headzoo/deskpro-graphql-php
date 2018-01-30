@@ -232,6 +232,7 @@ class Client implements ClientInterface
      * @return array
      * 
      * @throws Exception\InvalidResponseException
+     * @throws Exception\NotFoundException
      * @throws Exception\QueryErrorException
      */
     protected function makeResponse(ResponseInterface $resp)
@@ -243,8 +244,15 @@ class Client implements ClientInterface
         if ($json === null) {
             throw new Exception\InvalidResponseException('Unable to JSON decode response.');
         }
+        
         if (isset($json['errors'])) {
-            throw new Exception\QueryErrorException($json['errors'][0]['message']);
+            $error = $json['errors'][0];
+            if ($error['message'] === 'Not Found' && !empty($error['field'])) {
+                throw new Exception\NotFoundException(
+                    sprintf('Field %s not found.', $error['field'])
+                );
+            }
+            throw new Exception\QueryErrorException($error['message']);
         }
         if (!isset($json['data'])) {
             throw new Exception\InvalidResponseException();
