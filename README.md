@@ -78,6 +78,17 @@ try {
 }
 ```
 
+The query created by the builder.
+
+```
+query GetNews ($id: ID!) {
+    content_get_news(id: $id) {
+            title
+            content
+    }
+}
+```
+
 #### Multiple Fields
 
 ```php
@@ -95,7 +106,11 @@ $query = $client->createQuery('GetNews', [
     'content'
 ])->field('content_get_articles', 'id: $articleId', [
     'title',
-    'content'
+    'content',
+    'categories' => [
+        'id',
+        'title'
+    ]
 ]);
 
 try {
@@ -107,6 +122,26 @@ try {
     
 } catch (GrapQLException $e) {
     echo $e->getMessage();
+}
+```
+
+The query created by the builder.
+
+```
+query GetNews ($newsId: ID!, $articleId: ID!) {
+    content_get_news(id: $newsId) {
+            title
+            content
+    }
+
+    content_get_articles(id: $articleId) {
+            title
+            content
+            categories {
+                id
+                title
+            }
+    }
 }
 ```
 

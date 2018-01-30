@@ -14,7 +14,7 @@ $client->setLogger($logger);
 
 $query = $client->createQuery('GetNews', [
     '$newsId'    => 'ID!',
-    '$articleId' => 'ID!'
+    '$articleId' => 'ID!',
 ])->field('content_get_news', 'id: $newsId', [
     'title',
     'content'
