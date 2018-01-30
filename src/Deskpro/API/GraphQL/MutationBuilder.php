@@ -7,6 +7,11 @@ namespace Deskpro\API\GraphQL;
 class MutationBuilder extends AbstractBuilder implements MutationBuilderInterface
 {
     /**
+     * Describes the type of operation performed by this builder
+     */
+    const OPERATION_TYPE = 'mutation';
+    
+    /**
      * @return string
      */
     public function getMutation()
@@ -17,8 +22,8 @@ class MutationBuilder extends AbstractBuilder implements MutationBuilderInterfac
     /**
      * @return string
      */
-    protected function getOperationType()
+    public function getOperationType()
     {
-        return 'mutation';
+        return self::OPERATION_TYPE;
     }
 }

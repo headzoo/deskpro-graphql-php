@@ -56,6 +56,11 @@ abstract class AbstractBuilder implements BuilderInterface
     }
 
     /**
+     * @return string
+     */
+    public abstract function getOperationType();
+    
+    /**
      * {@inheritdoc}
      */
     public function field($name, $args = [], $fields = [])
@@ -142,11 +147,6 @@ abstract class AbstractBuilder implements BuilderInterface
     {
         return $this->build();
     }
-
-    /**
-     * @return string
-     */
-    protected abstract function getOperationType();
 
     /**
      * @return string

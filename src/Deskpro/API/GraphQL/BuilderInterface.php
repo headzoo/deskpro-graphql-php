@@ -7,6 +7,13 @@ namespace Deskpro\API\GraphQL;
 interface BuilderInterface
 {
     /**
+     * Returns a string describing the type of operation performed by the builder
+     * 
+     * @return string
+     */
+    public function getOperationType();
+    
+    /**
      * @param string $name
      * @param array $args
      * @param array $fields

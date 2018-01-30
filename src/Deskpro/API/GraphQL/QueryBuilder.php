@@ -7,6 +7,11 @@ namespace Deskpro\API\GraphQL;
 class QueryBuilder extends AbstractBuilder implements QueryBuilderInterface
 {
     /**
+     * Describes the type of operation performed by this builder
+     */
+    const OPERATION_TYPE = 'query';
+    
+    /**
      * {@inheritdoc}
      */
     public function getQuery()
@@ -17,8 +22,8 @@ class QueryBuilder extends AbstractBuilder implements QueryBuilderInterface
     /**
      * {@inheritdoc}
      */
-    protected function getOperationType()
+    public function getOperationType()
     {
-        return 'query';
+        return self::OPERATION_TYPE;
     }
 }
