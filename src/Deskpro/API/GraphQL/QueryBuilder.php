@@ -56,63 +56,7 @@ class QueryBuilder implements QueryBuilderInterface
     }
 
     /**
-     * @return string
-     */
-    public function getOperationName()
-    {
-        return $this->operationName;
-    }
-
-    /**
-     * @param string $operationName
-     *
-     * @return $this
-     *
-     * @throws Exception\QueryBuilderException
-     */
-    public function setOperationName($operationName)
-    {
-        if (!preg_match(self::$regexValidateName, $operationName)) {
-            throw new Exception\QueryBuilderException(
-                sprintf('Invalid operation name, must match %s', self::$regexValidateName)
-            );
-        }
-
-        $this->operationName = $operationName;
-        $this->cache = null;
-
-        return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getOperationArgs()
-    {
-        return $this->operationArgs;
-    }
-
-    /**
-     * @param array|string $operationArgs
-     *
-     * @return $this
-     */
-    public function setOperationArgs($operationArgs)
-    {
-        $this->operationArgs = $operationArgs;
-        $this->cache = null;
-
-        return $this;
-    }
-
-    /**
-     * @param string $name
-     * @param array $args
-     * @param array $fields
-     * 
-     * @return $this
-     * 
-     * @throws Exception\QueryBuilderException
+     * {@inheritdoc}
      */
     public function field($name, $args = [], $fields = [])
     {
@@ -140,8 +84,7 @@ class QueryBuilder implements QueryBuilderInterface
     }
 
     /**
-     * @param array $args
-     * @return array
+     * {@inheritdoc}
      */
     public function execute(array $args = [])
     {
@@ -149,19 +92,19 @@ class QueryBuilder implements QueryBuilderInterface
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getQuery()
     {
         if ($this->cache !== null) {
             return $this->cache;
         }
-        
+
         $this->cache = '';
         foreach($this->fields as $values) {
             $this->cache .= $this->buildField($values) . "\n\n";
         }
-        
+
         $this->cache = sprintf(
             "query %s {\n%s\n}",
             $this->buildOperation(),
@@ -172,7 +115,51 @@ class QueryBuilder implements QueryBuilderInterface
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
+     */
+    public function getOperationName()
+    {
+        return $this->operationName;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setOperationName($operationName)
+    {
+        if (!preg_match(self::$regexValidateName, $operationName)) {
+            throw new Exception\QueryBuilderException(
+                sprintf('Invalid operation name, must match %s', self::$regexValidateName)
+            );
+        }
+
+        $this->operationName = $operationName;
+        $this->cache = null;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getOperationArgs()
+    {
+        return $this->operationArgs;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setOperationArgs($operationArgs)
+    {
+        $this->operationArgs = $operationArgs;
+        $this->cache = null;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function __toString()
     {

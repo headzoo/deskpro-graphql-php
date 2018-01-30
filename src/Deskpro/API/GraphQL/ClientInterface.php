@@ -9,6 +9,24 @@ use GuzzleHttp\ClientInterface as HTTPClientInterface;
 interface ClientInterface
 {
     /**
+     * @param string $operationName
+     * @param array|string $args
+     * @return QueryBuilder
+     */
+    public function createQuery($operationName, $args = []);
+
+    /**
+     * @param QueryBuilder|string $query
+     * @param array $variables
+     *
+     * @return array
+     *
+     * @throws Exception\InvalidResponseException
+     * @throws Exception\QueryErrorException
+     */
+    public function execute($query, array $variables = []);
+    
+    /**
      * Sets the person ID and authentication token
      *
      * @param int $personId The ID of the person being authenticated
@@ -75,22 +93,4 @@ interface ClientInterface
      * @return $this
      */
     public function setDefaultHeaders(array $defaultHeaders);
-
-    /**
-     * @param string $operationName
-     * @param array|string $args
-     * @return QueryBuilder
-     */
-    public function createQuery($operationName, $args = []);
-
-    /**
-     * @param QueryBuilder|string $query
-     * @param array $variables
-     *
-     * @return array
-     *
-     * @throws Exception\InvalidResponseException
-     * @throws Exception\QueryErrorException
-     */
-    public function execute($query, array $variables = []);
 }

@@ -75,111 +75,7 @@ class Client implements ClientInterface
     }
 
     /**
-     * Sets the person ID and authentication token
-     *
-     * @param int $personId The ID of the person being authenticated
-     * @param string $token The authentication token
-     *
-     * @return $this
-     */
-    public function setAuthToken($personId, $token)
-    {
-        $this->authToken = sprintf("%d:%s", $personId, $token);
-
-        return $this;
-    }
-    
-    /**
-     * Sets the person ID and authentication key
-     *
-     * @param int $personId The ID of the person being authenticated
-     * @param string $key The authentication key
-     *
-     * @return $this
-     */
-    public function setAuthKey($personId, $key)
-    {
-        $this->authKey = sprintf("%d:%s", $personId, $key);
-
-        return $this;
-    }
-
-    /**
-     * Returns the base URL to the Deskpro instance
-     *
-     * @return string
-     */
-    public function getHelpdeskUrl()
-    {
-        return $this->helpdeskUrl;
-    }
-
-    /**
-     * Sets the base URL to the Deskpro instance
-     *
-     * @param string $helpdeskUrl The base URL to the Deskpro instance
-     *
-     * @return $this
-     */
-    public function setHelpdeskUrl($helpdeskUrl)
-    {
-        $this->helpdeskUrl = rtrim($helpdeskUrl, '/');
-
-        return $this;
-    }
-
-    /**
-     * Returns the HTTP client used to make requests
-     *
-     * @return ClientInterface
-     */
-    public function getHTTPClient()
-    {
-        return $this->httpClient;
-    }
-
-    /**
-     * Sets the HTTP client used to make requests
-     *
-     * @param HTTPClientInterface $httpClient HTTP client used to make requests
-     *
-     * @return $this
-     */
-    public function setHTTPClient(HTTPClientInterface $httpClient)
-    {
-        $this->httpClient = $httpClient;
-        
-        return $this;
-    }
-
-    /**
-     * Returns the headers sent with each request
-     *
-     * @return array
-     */
-    public function getDefaultHeaders()
-    {
-        return $this->defaultHeaders;
-    }
-
-    /**
-     * Sets the headers sent with each request
-     *
-     * @param array $defaultHeaders The headers to send
-     *
-     * @return $this
-     */
-    public function setDefaultHeaders(array $defaultHeaders)
-    {
-        $this->defaultHeaders = $defaultHeaders;
-
-        return $this;
-    }
-
-    /**
-     * @param string $operationName
-     * @param array|string $args
-     * @return QueryBuilder
+     * {@inheritdoc}
      */
     public function createQuery($operationName, $args = [])
     {
@@ -187,13 +83,7 @@ class Client implements ClientInterface
     }
 
     /**
-     * @param QueryBuilder|string $query
-     * @param array $variables
-     * 
-     * @return array
-     * 
-     * @throws Exception\InvalidResponseException
-     * @throws Exception\QueryErrorException
+     * {@inheritdoc}
      */
     public function execute($query, array $variables = [])
     {
@@ -205,7 +95,7 @@ class Client implements ClientInterface
             }
             $sanitizedVariables[$name] = $variable;
         }
-        
+
         $req = $this->makeRequest([
             'query'     => $query,
             'variables' => $sanitizedVariables
@@ -217,6 +107,80 @@ class Client implements ClientInterface
         $resp = $this->httpClient->send($req);
 
         return $this->makeResponse($resp);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setAuthToken($personId, $token)
+    {
+        $this->authToken = sprintf("%d:%s", $personId, $token);
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setAuthKey($personId, $key)
+    {
+        $this->authKey = sprintf("%d:%s", $personId, $key);
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getHelpdeskUrl()
+    {
+        return $this->helpdeskUrl;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setHelpdeskUrl($helpdeskUrl)
+    {
+        $this->helpdeskUrl = rtrim($helpdeskUrl, '/');
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getHTTPClient()
+    {
+        return $this->httpClient;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setHTTPClient(HTTPClientInterface $httpClient)
+    {
+        $this->httpClient = $httpClient;
+        
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getDefaultHeaders()
+    {
+        return $this->defaultHeaders;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setDefaultHeaders(array $defaultHeaders)
+    {
+        $this->defaultHeaders = $defaultHeaders;
+
+        return $this;
     }
 
     /**
