@@ -17,7 +17,7 @@ class MutationBuilder extends AbstractBuilder implements MutationBuilderInterfac
     /**
      * @return string
      */
-    protected function getTypeName()
+    protected function getOperationType()
     {
         return 'mutation';
     }

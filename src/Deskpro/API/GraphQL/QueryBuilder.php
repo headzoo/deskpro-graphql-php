@@ -17,7 +17,7 @@ class QueryBuilder extends AbstractBuilder implements QueryBuilderInterface
     /**
      * {@inheritdoc}
      */
-    protected function getTypeName()
+    protected function getOperationType()
     {
         return 'query';
     }

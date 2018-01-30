@@ -146,7 +146,7 @@ abstract class AbstractBuilder implements BuilderInterface
     /**
      * @return string
      */
-    protected abstract function getTypeName();
+    protected abstract function getOperationType();
 
     /**
      * @return string
@@ -164,7 +164,7 @@ abstract class AbstractBuilder implements BuilderInterface
 
         $this->cache = sprintf(
             "%s %s {\n%s\n}",
-            $this->getTypeName(),
+            $this->getOperationType(),
             $this->buildOperation(),
             rtrim($this->cache)
         );
