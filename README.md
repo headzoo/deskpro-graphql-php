@@ -61,9 +61,8 @@ $client = new GraphQLClient('https://deskpro.company.com');
 $client->setAuthKey(1, 'dev-admin-code');
 
 $query = $client->createQuery('GetNews', [
-    'id' => 'ID!'
-]);
-$query->field('content_get_news', 'id: $id', [
+    '$id' => 'ID!'
+])->field('content_get_news', 'id: $id', [
     'title',
     'content'
 ]);
