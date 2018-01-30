@@ -23,10 +23,9 @@ composer require deskpro/graphql-php
 
 ```php
 <?php
-use Deskpro\API\GraphQL\GraphQLClient;
-use Deskpro\API\GraphQL\Exception\GrapQLException;
+use Deskpro\API\GraphQL;
 
-$client = new GraphQLClient('https://deskpro.company.com');
+$client = new GraphQL\Client('https://deskpro.company.com');
 $client->setAuthKey(1, 'dev-admin-code');
 
 $query = '
@@ -44,7 +43,7 @@ try {
     ]);
     print_r($data);
     
-} catch (GrapQLException $e) {
+} catch (GraphQL\Exception\GrapQLException $e) {
     echo $e->getMessage();
 }
 ```
@@ -54,10 +53,9 @@ Using the query builder.
 
 ```php
 <?php
-use Deskpro\API\GraphQL\GraphQLClient;
-use Deskpro\API\GraphQL\Exception\GrapQLException;
+use Deskpro\API\GraphQL;
 
-$client = new GraphQLClient('https://deskpro.company.com');
+$client = new GraphQL\Client('https://deskpro.company.com');
 $client->setAuthKey(1, 'dev-admin-code');
 
 $query = $client->createQuery('GetNews', [
@@ -73,7 +71,7 @@ try {
     ]);
     print_r($data);
     
-} catch (GrapQLException $e) {
+} catch (GraphQL\Exception\GrapQLException $e) {
     echo $e->getMessage();
 }
 ```
@@ -93,10 +91,9 @@ query GetNews ($id: ID!) {
 
 ```php
 <?php
-use Deskpro\API\GraphQL\GraphQLClient;
-use Deskpro\API\GraphQL\Exception\GrapQLException;
+use Deskpro\API\GraphQL;
 
-$client = new GraphQLClient('http://deskpro-dev.com');
+$client = new GraphQL\Client('http://deskpro-dev.com');
 
 $query = $client->createQuery('GetNews', [
     '$newsId'    => 'ID!',
@@ -120,7 +117,7 @@ try {
     ]);
     print_r($data);
     
-} catch (GrapQLException $e) {
+} catch (GraphQL\Exception\GrapQLException $e) {
     echo $e->getMessage();
 }
 ```
@@ -145,15 +142,64 @@ query GetNews ($newsId: ID!, $articleId: ID!) {
 }
 ```
 
+#### Field Alias
+Aliases must be used when querying multiple fields with the same name.
+
+```php
+<?php
+use Deskpro\API\GraphQL;
+
+$client = new GraphQL\Client('https://deskpro.company.com');
+$client->setAuthKey(1, 'dev-admin-code');
+
+$query = $client->createQuery('GetNews', [
+    '$id1' => 'ID!',
+    '$id2' => 'ID!'
+])->field('news1: content_get_news', 'id: $id1', [
+    'title',
+    'content'
+])->field('news2: content_get_news', 'id: $id2', [
+    'title',
+    'content'
+]);
+
+try {
+    $data = $query->execute([
+        'id1' => 1,
+        'id2' => 2
+    ]);
+    print_r($data);
+    
+} catch (GraphQL\Exception\GrapQLException $e) {
+    echo $e->getMessage();
+}
+```
+
+The query created by the builder.
+
+```
+query GetNews ($id2: ID!, $id2: ID!) {
+    news1: content_get_news(id: $id1) {
+            title
+            content
+    }
+    
+    news2: content_get_news(id: $id2) {
+            title
+            content
+    }
+}
+```
+
 
 ## Default Headers
 Custom headers may be sent with each request by passing them to the `setDefaultHeaders()` method.
 
 ```php
 <?php
-use Deskpro\API\GraphQL\GraphQLClient;
+use Deskpro\API\GraphQL;
 
-$client = new GraphQLClient('https://deskpro.company.com');
+$client = new GraphQL\Client('https://deskpro.company.com');
 $client->setDefaultHeaders([
     'X-Custom-Value' => 'foo'
 ]);
@@ -164,14 +210,14 @@ Requests may be logged by providing an instance of `Psr\Log\LoggerInterface` to 
 
 ```php
 <?php
-use Deskpro\API\GraphQL\GraphQLClient;
+use Deskpro\API\GraphQL;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
-$logger = new Logger('name');
+$logger = new Logger('GraphQL');
 $logger->pushHandler(new StreamHandler('path/to/your.log', Logger::DEBUG));
 
-$client = new GraphQLClient('https://deskpro.company.com');
+$client = new GraphQL\Client('https://deskpro.company.com');
 $client->setLogger($logger);
 ```
 
@@ -180,14 +226,14 @@ Guzzle is used to make HTTP requests. A default Guzzle client will be used unles
 
 ```php
 <?php
-use Deskpro\API\GraphQL\GraphQLClient;
+use Deskpro\API\GraphQL;
 use GuzzleHttp\Client;
 
 $httpClient = new Client([
     'timeout' => 60
 ]);
 
-$client = new GraphQLClient('https://deskpro.company.com');
+$client = new GraphQL\Client('https://deskpro.company.com');
 $client->setHTTPClient($guzzle);
 ```
 

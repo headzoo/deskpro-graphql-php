@@ -17,7 +17,7 @@ class QueryBuilder implements QueryBuilderInterface
     protected static $regexValidateName = '/^[_a-z]+[_a-z0-9]*$/i';
 
     /**
-     * @var GraphQLClientInterface
+     * @var ClientInterface
      */
     protected $client;
 
@@ -44,11 +44,11 @@ class QueryBuilder implements QueryBuilderInterface
     /**
      * Constructor
      *
-     * @param GraphQLClientInterface $client Executes the query
+     * @param ClientInterface $client Executes the query
      * @param string $operationName Name of the operation
-     * @param array $operationArgs Operation arguments
+     * @param array|string $operationArgs Operation arguments
      */
-    public function __construct(GraphQLClientInterface $client, $operationName, array $operationArgs = [])
+    public function __construct(ClientInterface $client, $operationName, $operationArgs = [])
     {
         $this->client = $client;
         $this->setOperationName($operationName);
@@ -93,11 +93,11 @@ class QueryBuilder implements QueryBuilderInterface
     }
 
     /**
-     * @param array $operationArgs
+     * @param array|string $operationArgs
      *
      * @return $this
      */
-    public function setOperationArgs(array $operationArgs)
+    public function setOperationArgs($operationArgs)
     {
         $this->operationArgs = $operationArgs;
         $this->cache = null;
@@ -218,15 +218,23 @@ class QueryBuilder implements QueryBuilderInterface
     {
         $operationName = $this->operationName;
         if ($this->operationArgs) {
-            $args = [];
-            foreach ($this->operationArgs as $name => $type) {
+            $operationArgs = $this->operationArgs;
+            if (is_string($operationArgs)) {
+                $operationArgs = array_map('trim', explode(',', $operationArgs));
+            }
+
+            $sanitizedArgs = [];
+            foreach($operationArgs as $name => $type) {
+                if (is_integer($name)) {
+                    list($name, $type) = array_map('trim', explode(':', $type));
+                }
                 if ($name[0] !== '$') {
                     $name = '$' . $name;
                 }
-                $args[] = sprintf('%s: %s', $name, (string)$type);
+                $sanitizedArgs[] = sprintf('%s: %s', $name, (string)$type);
             }
 
-            $operationName = sprintf('%s (%s)', $operationName, join(', ', $args));
+            $operationName = sprintf('%s (%s)', $operationName, join(', ', $sanitizedArgs));
         }
         
         return $operationName;

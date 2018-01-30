@@ -1,12 +1,12 @@
 <?php
 namespace Deskpro\API\GraphQL;
 
-use GuzzleHttp\ClientInterface;
+use GuzzleHttp\ClientInterface as HTTPClientInterface;
 
 /**
  * Class GraphQLClient
  */
-interface GraphQLClientInterface
+interface ClientInterface
 {
     /**
      * Sets the person ID and authentication token
@@ -54,11 +54,11 @@ interface GraphQLClientInterface
     /**
      * Sets the HTTP client used to make requests
      *
-     * @param ClientInterface $httpClient HTTP client used to make requests
+     * @param HTTPClientInterface $httpClient HTTP client used to make requests
      *
      * @return $this
      */
-    public function setHTTPClient(ClientInterface $httpClient);
+    public function setHTTPClient(HTTPClientInterface $httpClient);
 
     /**
      * Returns the headers sent with each request
@@ -78,10 +78,10 @@ interface GraphQLClientInterface
 
     /**
      * @param string $operationName
-     * @param array $args
+     * @param array|string $args
      * @return QueryBuilder
      */
-    public function createQuery($operationName, array $args = []);
+    public function createQuery($operationName, $args = []);
 
     /**
      * @param QueryBuilder|string $query

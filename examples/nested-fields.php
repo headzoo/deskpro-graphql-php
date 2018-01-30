@@ -2,7 +2,7 @@
 use Deskpro\API\GraphQL;
 require(__DIR__ . '/../vendor/autoload.php');
 
-$client = new GraphQL\GraphQLClient('http://deskpro-dev.com');
+$client = new GraphQL\Client('http://deskpro-dev.com');
 
 $query = $client->createQuery('GetNews', [
     '$articleId' => 'ID!'

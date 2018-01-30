@@ -2,9 +2,9 @@
 namespace Deskpro\API\GraphQL;
 
 use GuzzleHttp\Client as Guzzle;
-use GuzzleHttp\ClientInterface;
+use GuzzleHttp\ClientInterface as HTTPClientInterface;
 use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Response;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -12,7 +12,7 @@ use Psr\Log\NullLogger;
 /**
  * Class GraphQLClient
  */
-class GraphQLClient implements GraphQLClientInterface
+class Client implements ClientInterface
 {
     use LoggerAwareTrait;
     
@@ -42,7 +42,7 @@ class GraphQLClient implements GraphQLClientInterface
     protected $helpdeskUrl;
 
     /**
-     * @var Guzzle
+     * @var HTTPClientInterface
      */
     protected $httpClient;
 
@@ -63,11 +63,11 @@ class GraphQLClient implements GraphQLClientInterface
     /**
      * Constructor
      * 
-     * @param string          $helpdeskUrl The base URL to the Deskpro instance
-     * @param ClientInterface $httpClient  The HTTP client used to make requests
-     * @param LoggerInterface $logger      Used to log requests
+     * @param string $helpdeskUrl The base URL to the Deskpro instance
+     * @param HTTPClientInterface $httpClient  The HTTP client used to make requests
+     * @param LoggerInterface $logger Used to log requests
      */
-    public function __construct($helpdeskUrl, ClientInterface $httpClient = null, LoggerInterface $logger = null)
+    public function __construct($helpdeskUrl, HTTPClientInterface $httpClient = null, LoggerInterface $logger = null)
     {
         $this->setHelpdeskUrl($helpdeskUrl);
         $this->setHTTPClient($httpClient ?: new Guzzle());
@@ -141,11 +141,11 @@ class GraphQLClient implements GraphQLClientInterface
     /**
      * Sets the HTTP client used to make requests
      *
-     * @param ClientInterface $httpClient HTTP client used to make requests
+     * @param HTTPClientInterface $httpClient HTTP client used to make requests
      *
      * @return $this
      */
-    public function setHTTPClient(ClientInterface $httpClient)
+    public function setHTTPClient(HTTPClientInterface $httpClient)
     {
         $this->httpClient = $httpClient;
         
@@ -178,10 +178,10 @@ class GraphQLClient implements GraphQLClientInterface
 
     /**
      * @param string $operationName
-     * @param array $args
+     * @param array|string $args
      * @return QueryBuilder
      */
-    public function createQuery($operationName, array $args = [])
+    public function createQuery($operationName, $args = [])
     {
         return new QueryBuilder($this, $operationName, $args);
     }
@@ -255,14 +255,14 @@ class GraphQLClient implements GraphQLClientInterface
     }
 
     /**
-     * @param Response $resp
+     * @param ResponseInterface $resp
      * 
      * @return array
      * 
      * @throws Exception\InvalidResponseException
      * @throws Exception\QueryErrorException
      */
-    protected function makeResponse(Response $resp)
+    protected function makeResponse(ResponseInterface $resp)
     {
         $body = (string)$resp->getBody();
         $this->logger->debug("RESPONSE ${body}");

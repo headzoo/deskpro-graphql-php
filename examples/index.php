@@ -1,6 +1,5 @@
 <?php
 use Deskpro\API\GraphQL;
-use Deskpro\API\GraphQL\Type\GraphQLType as Type;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
@@ -9,7 +8,7 @@ require(__DIR__ . '/../vendor/autoload.php');
 $logger = new Logger('GraphQL');
 $logger->pushHandler(new StreamHandler('graphql.log', Logger::DEBUG));
 
-$client = new GraphQL\GraphQLClient('http://deskpro-dev.com');
+$client = new GraphQL\Client('http://deskpro-dev.com');
 $client->setLogger($logger);
 
 $query = $client->createQuery('GetNews', [

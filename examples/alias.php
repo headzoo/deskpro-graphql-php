@@ -1,13 +1,12 @@
 <?php
 use Deskpro\API\GraphQL;
-use Deskpro\API\GraphQL\Type\GraphQLType as Type;
 
 require(__DIR__ . '/../vendor/autoload.php');
 
-$client = new GraphQL\GraphQLClient('http://deskpro-dev.com');
+$client = new GraphQL\Client('http://deskpro-dev.com');
 
 $query = $client->createQuery('GetNews', [
-    'id' => Type::nonNull(Type::id())
+    'id' => 'ID!'
 ]);
 $query->field('news: content_get_news', 'id: $id', [
     'title',

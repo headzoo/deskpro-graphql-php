@@ -12,7 +12,7 @@ $query = '
     }
 ';
 
-$client = new GraphQL\GraphQLClient('http://deskpro-dev.com');
+$client = new GraphQL\Client('http://deskpro-dev.com');
 
 $data = $client->execute($query, [
     'id' => 1

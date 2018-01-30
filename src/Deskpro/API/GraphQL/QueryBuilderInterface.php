@@ -24,11 +24,11 @@ interface QueryBuilderInterface
     public function getOperationArgs();
 
     /**
-     * @param array $operationArgs
+     * @param array|string $operationArgs
      *
      * @return $this
      */
-    public function setOperationArgs(array $operationArgs);
+    public function setOperationArgs($operationArgs);
 
     /**
      * @param string $name
