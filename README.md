@@ -90,6 +90,37 @@ query GetNews ($id: ID!) {
 }
 ```
 
+Once built a query may be called multiple times with different arguments.
+
+```php
+<?php
+use Deskpro\API\GraphQL;
+
+$client = new GraphQL\Client('https://deskpro.company.com');
+$client->setAuthKey(1, 'dev-admin-code');
+
+$query = $client->createQuery('GetNews', [
+    '$id' => 'ID!'
+])->field('content_get_news', 'id: $id', [
+    'title',
+    'content'
+]);
+
+try {
+    $rows = [];
+    $ids  = [1, 2, 3];
+    foreach($ids as $id) {
+        $rows[] = $query->execute(['id' => $id]);
+    }
+
+    print_r($rows);
+    
+} catch (GraphQL\Exception\GrapQLException $e) {
+    echo $e->getMessage();
+}
+```
+
+
 #### Multiple Fields
 
 ```php

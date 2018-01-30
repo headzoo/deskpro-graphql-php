@@ -26,10 +26,10 @@ $client->setLogger($logger);
     ]
 ]);*/
 
-$mutation = $client->createMutation('UpdateArticle', [
+/*$mutation = $client->createMutation('UpdateArticle', [
     '$id'      => 'Int',
     '$article' => 'ArticleTypeInput!'
-])->field('content_update_articles', 'id: $id, article: $article');
+])->field('content_update_articles', 'id: $id, article: $article');*/
 
 /*$data = $mutation->execute([
     'id'      => 100,
@@ -39,6 +39,9 @@ $mutation = $client->createMutation('UpdateArticle', [
 ]);
 dump($data);
 die();*/
-$data = $mutation->getMutation();
+
+$query = $client->createQuery('GetNews', '$id: ID!');
+$query->field('content_get_news', [], 'title');
+$data = $query->getQuery();
 echo $data;
 die("\n");

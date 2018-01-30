@@ -17,6 +17,17 @@ abstract class AbstractBuilder implements BuilderInterface
     protected static $regexValidateName = '/^[_a-z]+[_a-z0-9]*$/i';
 
     /**
+     * @var array
+     */
+    protected static $scalarTypes = [
+        'ID',
+        'Int',
+        'String',
+        'Float',
+        'Boolean'
+    ];
+
+    /**
      * @var ClientInterface
      */
     protected $client;
@@ -183,6 +194,7 @@ abstract class AbstractBuilder implements BuilderInterface
         $alias  = isset($values['alias']) ? $values['alias'] . ': ' : null;
         $args   = $this->buildArgs($values['args']);
         $fields = $this->buildFields($values['fields']);
+        
         if ($fields) {
             $fields = sprintf(
                 " {\n%s%s\n%s}",
@@ -192,12 +204,17 @@ abstract class AbstractBuilder implements BuilderInterface
             );
         }
 
+        $open_brace = ($args) ? '(' : '';
+        $close_brace = ($args) ? ')' : '';
+
         $type = sprintf(
-            "%s%s%s(%s)%s",
+            "%s%s%s%s%s%s%s",
             $this->tabs(1),
             $alias,
             $name,
+            $open_brace,
             $args,
+            $close_brace,
             $fields
         );
 
@@ -279,7 +296,7 @@ abstract class AbstractBuilder implements BuilderInterface
                     $this->tabs($indent - 1)
                 );
                 $indent--;
-            } else {
+            } else if (!in_array($field, self::$scalarTypes)) {
                 $sanitizedFields[] = $field;
             }
         }
