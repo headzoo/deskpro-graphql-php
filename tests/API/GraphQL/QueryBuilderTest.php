@@ -1,24 +1,18 @@
 <?php
-require('GraphQLQueriesAreEqualConstraint.php');
+require_once('GraphQLTestCase.php');
 
-use PHPUnit\Framework\TestCase;
 use Deskpro\API\GraphQL\ClientInterface;
 use Deskpro\API\GraphQL\QueryBuilder;
 
 /**
- * @coversDefaultClass \Deskpro\API\GraphQL\QueryBuilder
+ * Class QueryBuilderTest
  */
-class QueryBuilderTest extends TestCase
+class QueryBuilderTest extends GraphQLTestCase
 {
     /**
-     * @var \PHPUnit_Framework_MockObject_MockBuilder|ClientInterface
+     * @var \PHPUnit_Framework_MockObject_MockObject|ClientInterface
      */
     public $clientMock;
-    
-    /**
-     * @var QueryBuilder
-     */
-    public $fixture;
     
     /**
      * Run before each test
@@ -26,21 +20,101 @@ class QueryBuilderTest extends TestCase
     public function setUp()
     {
         $this->clientMock = $this->getMockBuilder(ClientInterface::class)->getMock();
-        $this->fixture = new QueryBuilder($this->clientMock, 'GetNews', '$id: ID!');
     }
-
-    /**
-     * @covers ::getQuery
-     * @covers ::field
-     */
-    public function testGetQuerySingleField()
+    
+    public function testOperationArgsAsString()
     {
-        $this->fixture->field('content_get_news', 'id: $newsId', [
-            'title',
-            'content'
-        ]);
+        $expected = '
+            query GetNews ($id: ID!) {
+
+            }
+        ';
+
+        $fixture = new QueryBuilder($this->clientMock, 'GetNews', '$id: ID!');
+        $this->assertGraphQLQueriesAreEqual($expected, $fixture->getQuery());
+    }
+    
+    public function testOperationArgsAsArray()
+    {
+        $expected = '
+            query GetNews ($id: ID!) {
+            
+            }
+        ';
         
-        $actual   = $this->fixture->getQuery();
+        $fixture = new QueryBuilder($this->clientMock, 'GetNews', [
+            '$id: ID!'
+        ]);
+        $this->assertGraphQLQueriesAreEqual($expected, $fixture->getQuery());
+    }
+    
+    public function testOperationArgsAsAssocArray()
+    {
+        $expected = '
+            query GetNews ($id: ID!) {
+            
+            }
+        ';
+        
+        $fixture = new QueryBuilder($this->clientMock, 'GetNews', [
+            '$id' => 'ID!'
+        ]);
+        $this->assertGraphQLQueriesAreEqual($expected, $fixture->getQuery());
+    }
+    
+    public function testOperationArgsWithoutDollarSign()
+    {
+        $expected = '
+            query GetNews ($id: ID!) {
+
+            }
+        ';
+
+        $fixture = new QueryBuilder($this->clientMock, 'GetNews', 'id: ID!');
+        $this->assertGraphQLQueriesAreEqual($expected, $fixture->getQuery());
+    }
+    
+    public function testFieldArgsAsString()
+    {
+        $expected = '
+            query GetNews ($id: ID!) {
+                content_get_news(id: $newsId)
+            }
+        ';
+
+        $fixture = new QueryBuilder($this->clientMock, 'GetNews', '$id: ID!');
+        $fixture->field('content_get_news', 'id: $newsId');
+        $this->assertGraphQLQueriesAreEqual($expected, $fixture->getQuery());
+    }
+    
+    public function testFieldArgsAsArray()
+    {
+        $expected = '
+            query GetNews ($id: ID!) {
+                content_get_news(id: $newsId)
+            }
+        ';
+        
+        $fixture = new QueryBuilder($this->clientMock, 'GetNews', '$id: ID!');
+        $fixture->field('content_get_news', ['id: $newsId']);
+        $this->assertGraphQLQueriesAreEqual($expected, $fixture->getQuery());
+    }
+    
+    public function testFieldArgsAsAssocArray()
+    {
+        $expected = '
+            query GetNews ($id: ID!) {
+                content_get_news(id: $newsId)
+            }
+        ';
+        
+        $fixture = new QueryBuilder($this->clientMock, 'GetNews', '$id: ID!');
+        $fixture->field('content_get_news', ['id' => '$newsId']);
+        $this->assertGraphQLQueriesAreEqual($expected, $fixture->getQuery());
+    }
+    
+    public function testFieldsAsString()
+    {
         $expected = '
             query GetNews ($id: ID!) {
                 content_get_news(id: $newsId) {
@@ -50,31 +124,52 @@ class QueryBuilderTest extends TestCase
             }
         ';
         
-        $this->assertGraphQLQueriesAreEqual($expected, $actual);
+        $fixture = new QueryBuilder($this->clientMock, 'GetNews', '$id: ID!');
+        $fixture->field('content_get_news', 'id: $newsId', 'title, content');
+        $this->assertGraphQLQueriesAreEqual($expected, $fixture->getQuery());
     }
-
-    /**
-     * @covers ::getQuery
-     * @covers ::field
-     */
-    public function testGetQueryMultipleFields()
+    
+    public function testFieldsAsArray()
     {
-        $this->fixture = new QueryBuilder($this->clientMock, 'GetNews', [
-            '$newsId'    => 'ID!',
-            '$articleId' => 'ID!',
-        ]);
-        $this->fixture
-        ->field('content_get_news', 'id: $newsId', [
+        $expected = '
+            query GetNews ($id: ID!) {
+                content_get_news(id: $newsId) {
+                    title
+                    content
+                }
+            }
+        ';
+
+        $fixture = new QueryBuilder($this->clientMock, 'GetNews', '$id: ID!');
+        $fixture->field('content_get_news', 'id: $newsId', [
             'title',
             'content'
-        ])->field('content_get_articles', 'id: $articleId', [
-            'title',
-            'content' => [
-                'id'
-            ]
         ]);
-
-        $actual   = $this->fixture->getQuery();
+        $this->assertGraphQLQueriesAreEqual($expected, $fixture->getQuery());
+    }
+    
+    public function testGetQuerySingleField()
+    {
+        $expected = '
+            query GetNews ($id: ID!) {
+                content_get_news(id: $newsId) {
+                    title
+                    content
+                }
+            }
+        ';
+        
+        $fixture = new QueryBuilder($this->clientMock, 'GetNews', '$id: ID!');
+        $fixture->field('content_get_news', 'id: $newsId', [
+            'title',
+            'content'
+        ]);
+        
+        $this->assertGraphQLQueriesAreEqual($expected, $fixture->getQuery());
+    }
+    
+    public function testGetQueryMultipleFields()
+    {
         $expected = '
             query GetNews ($newsId: ID!, $articleId: ID!) {
                 content_get_news(id: $newsId) {
@@ -90,103 +185,31 @@ class QueryBuilderTest extends TestCase
                 }
             }
         ';
-
-        $this->assertGraphQLQueriesAreEqual($expected, $actual);
-    }
-
-    /**
-     * @covers ::getQuery
-     */
-    public function testOperationArgs()
-    {
-        $expected = '
-            query GetNews ($id: ID!) {
-            
-            }
-        ';
-
-        $this->fixture = new QueryBuilder($this->clientMock, 'GetNews', '$id: ID!');
-        $this->assertGraphQLQueriesAreEqual($expected, $this->fixture->getQuery());
-
-        $this->fixture = new QueryBuilder($this->clientMock, 'GetNews', [
-            '$id: ID!'
-        ]);
-        $this->assertGraphQLQueriesAreEqual($expected, $this->fixture->getQuery());
         
-        $this->fixture = new QueryBuilder($this->clientMock, 'GetNews', [
-            '$id' => 'ID!'
+        $fixture = new QueryBuilder($this->clientMock, 'GetNews', [
+            '$newsId'    => 'ID!',
+            '$articleId' => 'ID!',
         ]);
-        $this->assertGraphQLQueriesAreEqual($expected, $this->fixture->getQuery());
-    }
-
-    /**
-     * @covers ::getQuery
-     */
-    public function testFieldArgs()
-    {
-        $expected = '
-            query GetNews ($id: ID!) {
-                content_get_news(id: $newsId)
-            }
-        ';
-
-        $this->fixture = new QueryBuilder($this->clientMock, 'GetNews', '$id: ID!');
-        $this->fixture->field('content_get_news', 'id: $newsId');
-        $this->assertGraphQLQueriesAreEqual($expected, $this->fixture->getQuery());
-
-        $this->fixture = new QueryBuilder($this->clientMock, 'GetNews', '$id: ID!');
-        $this->fixture->field('content_get_news', ['id: $newsId']);
-        $this->assertGraphQLQueriesAreEqual($expected, $this->fixture->getQuery());
-
-        $this->fixture = new QueryBuilder($this->clientMock, 'GetNews', '$id: ID!');
-        $this->fixture->field('content_get_news', ['id' => '$newsId']);
-        $this->assertGraphQLQueriesAreEqual($expected, $this->fixture->getQuery());
-    }
-
-    /**
-     * @covers ::getQuery
-     */
-    public function testFields()
-    {
-        $expected = '
-            query GetNews ($id: ID!) {
-                content_get_news(id: $newsId) {
-                    title
-                    content
-                }
-            }
-        ';
+        $fixture
+            ->field('content_get_news', 'id: $newsId', [
+                'title',
+                'content'
+            ])->field('content_get_articles', 'id: $articleId', [
+                'title',
+                'content' => [
+                    'id'
+                ]
+            ]);
         
-        $this->fixture = new QueryBuilder($this->clientMock, 'GetNews', '$id: ID!');
-        $this->fixture->field('content_get_news', 'id: $newsId', [
-            'title',
-            'content'
-        ]);
-        $this->assertGraphQLQueriesAreEqual($expected, $this->fixture->getQuery());
-
-        $this->fixture = new QueryBuilder($this->clientMock, 'GetNews', '$id: ID!');
-        $this->fixture->field('content_get_news', 'id: $newsId', 'title, content');
-        $this->assertGraphQLQueriesAreEqual($expected, $this->fixture->getQuery());
+        $this->assertGraphQLQueriesAreEqual($expected, $fixture->getQuery());
     }
-
-    /**
-     * @covers ::execute
-     */
+    
     public function testExecute()
     {
+        $fixture = new QueryBuilder($this->clientMock, 'GetNews', '$id: ID!');
         $this->clientMock->method('execute')
-            ->with($this->equalTo($this->fixture))
+            ->with($this->equalTo($fixture))
             ->willReturn([]);
-        $this->fixture->execute(['id' => 1]);
-    }
-
-    /**
-     * @param string $expected
-     * @param string $actual
-     * @param string $message
-     */
-    public static function assertGraphQLQueriesAreEqual($expected, $actual, $message = '')
-    {
-        self::assertThat($actual, new GraphQLQueriesAreEqualConstraint($expected), $message);
+        $fixture->execute(['id' => 1]);
     }
 }
