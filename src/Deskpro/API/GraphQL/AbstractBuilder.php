@@ -264,7 +264,7 @@ abstract class AbstractBuilder implements BuilderInterface
     protected function buildFields($fields, $indent = 3)
     {
         if (is_string($fields)) {
-            $fields = array_map('trim', explode(' ', $fields));
+            $fields = array_map('trim', explode(',', $fields));
         }
 
         $sanitizedFields = [];
