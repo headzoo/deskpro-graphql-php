@@ -14,11 +14,13 @@ PHP library that queries the Deskpro GraphQL API.
 
 * PHP 5.5+ with Composer
 
+
 ## Installing
 
 ```
 composer require deskpro/graphql-php
 ```
+
 
 ## Queries
 Raw strings may be used.
@@ -119,7 +121,6 @@ try {
     echo $e->getMessage();
 }
 ```
-
 
 #### Multiple Fields
 
@@ -225,6 +226,7 @@ query GetNews ($id2: ID!, $id2: ID!) {
 }
 ```
 
+
 ## Mutations
 Raw strings may be used.
 
@@ -306,6 +308,7 @@ $client->setDefaultHeaders([
 ]);
 ```
 
+
 ## Logging
 Requests may be logged by providing an instance of `Psr\Log\LoggerInterface` to the `setLogger()` method.
 
@@ -322,6 +325,7 @@ $client = new GraphQL\Client('https://deskpro.company.com');
 $client->setLogger($logger);
 ```
 
+
 ## Guzzle
 Guzzle is used to make HTTP requests. A default Guzzle client will be used unless one is provided.
 
@@ -337,6 +341,7 @@ $httpClient = new Client([
 $client = new GraphQL\Client('https://deskpro.company.com');
 $client->setHTTPClient($guzzle);
 ```
+
 
 ## Testing
 The composer "test" script runs the PHPUnit tests.
