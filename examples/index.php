@@ -31,14 +31,14 @@ $mutation = $client->createMutation('UpdateArticle', [
     '$article' => 'ArticleTypeInput!'
 ])->field('content_update_articles', 'id: $id, article: $article');
 
-$data = $mutation->execute([
+/*$data = $mutation->execute([
     'id'      => 100,
     'article' => [
         'title' => 'Hello, World!'
     ]
 ]);
 dump($data);
-die();
+die();*/
 $data = $mutation->getMutation();
 echo $data;
 die("\n");

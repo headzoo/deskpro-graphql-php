@@ -21,6 +21,7 @@ composer require deskpro/graphql-php
 ```
 
 ## Queries
+Raw query strings may be used.
 
 ```php
 <?php
@@ -193,6 +194,36 @@ query GetNews ($id2: ID!, $id2: ID!) {
 ```
 
 ## Mutations
+Raw query strings may be used.
+
+```php
+<?php
+use Deskpro\API\GraphQL;
+
+$client = new GraphQL\Client('https://deskpro.company.com');
+$client->setAuthKey(1, 'dev-admin-code');
+
+$mutation = '
+    mutation UpdateArticle ($id: Int, $article: ArticleTypeInput!) {
+        content_update_articles(id: $id, article: $article)
+    }
+';
+
+try {
+    $data = $client->execute($mutation, [
+        'id'      => 100,
+        'article' => [
+            'title' => 'Hello, World!'
+        ]
+    ]);
+    print_r($data);
+    
+} catch (GraphQL\Exception\GrapQLException $e) {
+    echo $e->getMessage();
+}
+```
+
+Using the mutations builder.
 
 ```php
 <?php
@@ -217,6 +248,14 @@ try {
     
 } catch (GraphQL\Exception\GrapQLException $e) {
     echo $e->getMessage();
+}
+```
+
+The mutation created by the builder.
+
+```
+mutation UpdateArticle ($id: Int, $article: ArticleTypeInput!) {
+    content_update_articles(id: $id, article: $article)
 }
 ```
 
