@@ -62,7 +62,8 @@ $client->setAuthKey(1, 'dev-admin-code');
 
 $query = $client->createQuery('GetNews', [
     '$id' => 'ID!'
-])->field('content_get_news', 'id: $id', [
+]);
+$query->field('content_get_news', 'id: $id', [
     'title',
     'content'
 ]);
@@ -235,7 +236,8 @@ $client->setAuthKey(1, 'dev-admin-code');
 $mutation = $client->createMutation('UpdateArticle', [
     '$id'      => 'Int',
     '$article' => 'ArticleTypeInput!'
-])->field('content_update_articles', 'id: $id, article: $article');
+]);
+$mutation->field('content_update_articles', 'id: $id, article: $article');
 
 try {
     $data = $mutation->execute([
