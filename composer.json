@@ -1,0 +1,37 @@
+{
+    "name": "deskpro/graphql-php",
+    "description": "PHP library that queries the Deskpro GraphQL API.",
+    "type": "library",
+    "config": {
+        "platform": {
+            "php": "5.5"
+        }
+    },
+    "keywords": [
+        "deskpro",
+        "graphql",
+        "api"
+    ],
+    "authors": [
+        {
+            "name": "The Deskpro Team",
+            "email": "team@deskpro.com"
+        }
+    ],
+    "license": "BSD-3-Clause",
+    "autoload": {
+        "psr-0": {
+            "Deskpro\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=5.5",
+        "guzzlehttp/guzzle": "^6.3",
+        "psr/log": "^1.0"
+    },
+    "require-dev": {
+        "symfony/var-dumper": "^4.0",
+        "phpunit/phpunit": "^4.8",
+        "monolog/monolog": "^1.23"
+    }
+}
