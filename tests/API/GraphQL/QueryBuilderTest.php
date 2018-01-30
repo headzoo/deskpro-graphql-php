@@ -170,6 +170,17 @@ class QueryBuilderTest extends TestCase
     }
 
     /**
+     * @covers ::execute
+     */
+    public function testExecute()
+    {
+        $this->clientMock->method('execute')
+            ->with($this->equalTo($this->fixture))
+            ->willReturn([]);
+        $this->fixture->execute(['id' => 1]);
+    }
+
+    /**
      * @param string $expected
      * @param string $actual
      * @param string $message
