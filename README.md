@@ -21,7 +21,7 @@ composer require deskpro/graphql-php
 ```
 
 ## Queries
-Raw query strings may be used.
+Raw strings may be used.
 
 ```php
 <?php
@@ -194,7 +194,7 @@ query GetNews ($id2: ID!, $id2: ID!) {
 ```
 
 ## Mutations
-Raw query strings may be used.
+Raw strings may be used.
 
 ```php
 <?php
