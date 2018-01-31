@@ -58,16 +58,32 @@ interface ClientInterface
      *
      * @return string
      */
-    public function getHelpdeskUrl();
+    public function getBaseUrl();
 
     /**
      * Sets the base URL to the Deskpro instance
      *
-     * @param string $helpdeskUrl The base URL to the Deskpro instance
+     * @param string $baseUrl The base URL to the Deskpro instance
      *
      * @return $this
      */
-    public function setHelpdeskUrl($helpdeskUrl);
+    public function setBaseUrl($baseUrl);
+
+    /**
+     * Returns the path, appended to baseUrl, for the GraphQL endpoint
+     *
+     * @return string
+     */
+    public function getGraphqlPath();
+
+    /**
+     * Sets the path, appended to baseUrl, for the GraphQL endpoint
+     *
+     * @param string $graphqlPath
+     *
+     * @return $this
+     */
+    public function setGraphqlPath($graphqlPath);
 
     /**
      * Returns the HTTP client used to make requests

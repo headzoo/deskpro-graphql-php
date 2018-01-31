@@ -32,10 +32,16 @@ class ClientTest extends TestCase
         $this->fixture = new Client('http://deskpro-dev.com', $this->httpClient);
     }
     
-    public function testGetSetHelpdeskUrl()
+    public function testGetSetBaseUrl()
     {
-        $this->assertSame($this->fixture, $this->fixture->setHelpdeskUrl('http://deskpro.company.com'));
-        $this->assertEquals('http://deskpro.company.com', $this->fixture->getHelpdeskUrl());
+        $this->assertSame($this->fixture, $this->fixture->setBaseUrl('http://deskpro.company.com'));
+        $this->assertEquals('http://deskpro.company.com', $this->fixture->getBaseUrl());
+    }
+    
+    public function testGetSetGraphqlPath()
+    {
+        $this->assertSame($this->fixture, $this->fixture->setGraphqlPath('/graphql'));
+        $this->assertEquals('/graphql', $this->fixture->getGraphqlPath());
     }
     
     public function testGetSetHTTPClient()

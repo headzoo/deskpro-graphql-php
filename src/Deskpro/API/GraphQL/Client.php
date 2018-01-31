@@ -17,11 +17,6 @@ class Client implements ClientInterface
     use LoggerAwareTrait;
     
     /**
-     * GraphQL endpoint
-     */
-    const GRAPHQL_PATH = '/api/v2/graphql';
-
-    /**
      * The authentication header
      */
     const AUTH_HEADER = 'Authorization';
@@ -39,7 +34,12 @@ class Client implements ClientInterface
     /**
      * @var string
      */
-    protected $helpdeskUrl;
+    protected $baseUrl;
+
+    /**
+     * @var string 
+     */
+    protected $graphqlPath = '/api/v2/graphql';
 
     /**
      * @var HTTPClientInterface
@@ -63,13 +63,13 @@ class Client implements ClientInterface
     /**
      * Constructor
      * 
-     * @param string $helpdeskUrl The base URL to the Deskpro instance
-     * @param HTTPClientInterface $httpClient  The HTTP client used to make requests
-     * @param LoggerInterface $logger Used to log requests
+     * @param string              $baseUrl    The base URL to the Deskpro instance
+     * @param HTTPClientInterface $httpClient The HTTP client used to make requests
+     * @param LoggerInterface     $logger     Used to log requests
      */
-    public function __construct($helpdeskUrl, HTTPClientInterface $httpClient = null, LoggerInterface $logger = null)
+    public function __construct($baseUrl, HTTPClientInterface $httpClient = null, LoggerInterface $logger = null)
     {
-        $this->setHelpdeskUrl($helpdeskUrl);
+        $this->setBaseUrl($baseUrl);
         $this->setHTTPClient($httpClient ?: new Guzzle());
         $this->setLogger($logger ?: new NullLogger());
     }
@@ -142,18 +142,42 @@ class Client implements ClientInterface
     /**
      * {@inheritdoc}
      */
-    public function getHelpdeskUrl()
+    public function getBaseUrl()
     {
-        return $this->helpdeskUrl;
+        return $this->baseUrl;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setHelpdeskUrl($helpdeskUrl)
+    public function setBaseUrl($baseUrl)
     {
-        $this->helpdeskUrl = rtrim($helpdeskUrl, '/');
+        $this->baseUrl = rtrim($baseUrl, '/');
 
+        return $this;
+    }
+
+    /**
+     * Returns the path, appended to baseUrl, for the GraphQL endpoint
+     *
+     * @return string
+     */
+    public function getGraphqlPath()
+    {
+        return $this->graphqlPath;
+    }
+
+    /**
+     * Sets the path, appended to baseUrl, for the GraphQL endpoint
+     *
+     * @param string $graphqlPath
+     *
+     * @return $this
+     */
+    public function setGraphqlPath($graphqlPath)
+    {
+        $this->graphqlPath = '/' . trim($graphqlPath, '/');
+        
         return $this;
     }
 
@@ -222,7 +246,7 @@ class Client implements ClientInterface
         if (!is_string($body)) {
             $body = json_encode($body);
         }
-        $url     = $this->helpdeskUrl . self::GRAPHQL_PATH;
+        $url     = $this->baseUrl . $this->graphqlPath;
         $headers = $this->makeHeaders($headers);;
 
         return new Request('POST', $url, $headers, $body);

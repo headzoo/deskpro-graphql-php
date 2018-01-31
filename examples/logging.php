@@ -29,4 +29,4 @@ $data = $query->execute([
     'newsId' => 1,
     'articleId' => 100
 ]);
-dump($data);
+print_r($data);
