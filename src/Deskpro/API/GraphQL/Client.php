@@ -1,4 +1,5 @@
 <?php
+
 namespace Deskpro\API\GraphQL;
 
 use GuzzleHttp\Client as Guzzle;
@@ -15,12 +16,12 @@ use Psr\Log\NullLogger;
 class Client implements ClientInterface
 {
     use LoggerAwareTrait;
-    
+
     /**
      * The authentication header
      */
     const AUTH_HEADER = 'Authorization';
-    
+
     /**
      * Key to use for token authentication
      */
@@ -30,14 +31,14 @@ class Client implements ClientInterface
      * Key to use for key authentication
      */
     const AUTH_KEY_KEY = 'key';
-    
+
     /**
      * @var string
      */
     protected $baseUrl;
 
     /**
-     * @var string 
+     * @var string
      */
     protected $graphqlPath = '/api/v2/graphql';
 
@@ -62,7 +63,7 @@ class Client implements ClientInterface
 
     /**
      * Constructor
-     * 
+     *
      * @param string              $baseUrl    The base URL to the Deskpro instance
      * @param HTTPClientInterface $httpClient The HTTP client used to make requests
      * @param LoggerInterface     $logger     Used to log requests
@@ -95,26 +96,34 @@ class Client implements ClientInterface
      */
     public function execute($query, array $variables = [])
     {
-        $query = trim((string)$query);
+        $query              = trim((string)$query);
         $sanitizedVariables = [];
-        foreach($variables as $name => $variable) {
+        foreach ($variables as $name => $variable) {
             if ($name[0] === '$') {
                 $name = substr($name, 1);
             }
             $sanitizedVariables[$name] = $variable;
         }
 
-        $req = $this->makeRequest([
-            'query'     => $query,
-            'variables' => $sanitizedVariables
-        ]);
-        $this->logger->debug(sprintf('POST %s', (string)$req->getUri()), [
-            'query'     => $query,
-            'variables' => $variables
-        ]);
-        $resp = $this->httpClient->send($req, [
-            'http_errors' => false
-        ]);
+        $req = $this->makeRequest(
+            [
+                'query'     => $query,
+                'variables' => $sanitizedVariables
+            ]
+        );
+        $this->logger->debug(
+            sprintf('POST %s', (string)$req->getUri()),
+            [
+                'query'     => $query,
+                'variables' => $variables
+            ]
+        );
+        $resp = $this->httpClient->send(
+            $req,
+            [
+                'http_errors' => false
+            ]
+        );
 
         return $this->makeResponse($resp);
     }
@@ -177,7 +186,7 @@ class Client implements ClientInterface
     public function setGraphqlPath($graphqlPath)
     {
         $this->graphqlPath = '/' . trim($graphqlPath, '/');
-        
+
         return $this;
     }
 
@@ -195,7 +204,7 @@ class Client implements ClientInterface
     public function setHTTPClient(HTTPClientInterface $httpClient)
     {
         $this->httpClient = $httpClient;
-        
+
         return $this;
     }
 
@@ -228,10 +237,13 @@ class Client implements ClientInterface
         if (!isset($headers[self::AUTH_HEADER])) {
             if ($this->authToken) {
                 $headers[self::AUTH_HEADER] = sprintf('%s %s', self::AUTH_TOKEN_KEY, $this->authToken);
-            } else if ($this->authKey) {
-                $headers[self::AUTH_HEADER] = sprintf('%s %s', self::AUTH_KEY_KEY, $this->authKey);
+            } else {
+                if ($this->authKey) {
+                    $headers[self::AUTH_HEADER] = sprintf('%s %s', self::AUTH_KEY_KEY, $this->authKey);
+                }
             }
         }
+
         return $headers;
     }
 
@@ -272,7 +284,7 @@ class Client implements ClientInterface
             throw new Exception\InvalidResponseException('Unable to JSON decode response.');
         }
 
-        switch($resp->getStatusCode()) {
+        switch ($resp->getStatusCode()) {
             case 401:
             case 403:
                 $message = 'You must be authenticated to make this request.';
@@ -282,7 +294,7 @@ class Client implements ClientInterface
                 throw new Exception\AuthenticationException($message, 401);
                 break;
         }
-        
+
         if (isset($json['errors'])) {
             $error = $json['errors'][0];
             if ($error['message'] === 'Not Found' && !empty($error['field'])) {

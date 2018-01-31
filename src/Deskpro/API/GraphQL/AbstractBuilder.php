@@ -1,4 +1,5 @@
 <?php
+
 namespace Deskpro\API\GraphQL;
 
 /**
@@ -19,13 +20,14 @@ abstract class AbstractBuilder implements BuilderInterface
     /**
      * @var array
      */
-    protected static $scalarTypes = [
-        'ID',
-        'Int',
-        'String',
-        'Float',
-        'Boolean'
-    ];
+    protected static $scalarTypes
+        = [
+            'ID',
+            'Int',
+            'String',
+            'Float',
+            'Boolean'
+        ];
 
     /**
      * @var ClientInterface
@@ -72,7 +74,7 @@ abstract class AbstractBuilder implements BuilderInterface
      * @return string
      */
     public abstract function getOperationType();
-    
+
     /**
      * {@inheritdoc}
      */
@@ -82,9 +84,11 @@ abstract class AbstractBuilder implements BuilderInterface
         if (is_array($name)) {
             $alias = $name[0];
             $name  = $name[1];
-        } else if (preg_match('/^(.*?)\s*:\s*(.*?)$/i', $name, $matches)) {
-            $alias = $matches[1];
-            $name  = $matches[2];
+        } else {
+            if (preg_match('/^(.*?)\s*:\s*(.*?)$/i', $name, $matches)) {
+                $alias = $matches[1];
+                $name  = $matches[2];
+            }
         }
 
         if (!preg_match(self::$regexValidateName, $name)) {
@@ -104,7 +108,7 @@ abstract class AbstractBuilder implements BuilderInterface
         }
 
         $this->fields[] = compact('name', 'alias', 'fields', 'args');
-        $this->cache = null;
+        $this->cache    = null;
 
         return $this;
     }
@@ -169,7 +173,7 @@ abstract class AbstractBuilder implements BuilderInterface
         }
 
         $this->operationName = $operationName;
-        $this->cache = null;
+        $this->cache         = null;
 
         return $this;
     }
@@ -188,7 +192,7 @@ abstract class AbstractBuilder implements BuilderInterface
     public function setOperationArgs($operationArgs)
     {
         $this->operationArgs = $operationArgs;
-        $this->cache = null;
+        $this->cache         = null;
 
         return $this;
     }
@@ -212,7 +216,7 @@ abstract class AbstractBuilder implements BuilderInterface
         }
 
         $this->cache = '';
-        foreach($this->fields as $values) {
+        foreach ($this->fields as $values) {
             $this->cache .= $this->buildField($values) . "\n\n";
         }
 
@@ -239,7 +243,7 @@ abstract class AbstractBuilder implements BuilderInterface
         $alias  = isset($values['alias']) ? $values['alias'] . ': ' : null;
         $args   = $this->buildArgs($values['args']);
         $fields = $this->buildFields($values['fields']);
-        
+
         if ($fields) {
             $fields = sprintf(
                 " {\n%s%s\n%s}",
@@ -249,7 +253,7 @@ abstract class AbstractBuilder implements BuilderInterface
             );
         }
 
-        $open_brace = ($args) ? '(' : '';
+        $open_brace  = ($args) ? '(' : '';
         $close_brace = ($args) ? ')' : '';
 
         $type = sprintf(
@@ -279,7 +283,7 @@ abstract class AbstractBuilder implements BuilderInterface
             }
 
             $sanitizedArgs = [];
-            foreach($operationArgs as $name => $type) {
+            foreach ($operationArgs as $name => $type) {
                 if (is_integer($name)) {
                     list($name, $type) = array_map('trim', explode(':', $type));
                 }
@@ -307,7 +311,7 @@ abstract class AbstractBuilder implements BuilderInterface
         }
 
         $sanitizedArgs = [];
-        foreach($args as $name => $arg) {
+        foreach ($args as $name => $arg) {
             if (is_integer($name)) {
                 list($name, $arg) = array_map('trim', explode(':', $arg));
             }
@@ -328,12 +332,14 @@ abstract class AbstractBuilder implements BuilderInterface
     {
         if (is_string($fields)) {
             $fields = array_map('trim', explode(',', $fields));
-        } else if ($fields instanceof Fragment) {
-            $fields = [$fields];
+        } else {
+            if ($fields instanceof Fragment) {
+                $fields = [$fields];
+            }
         }
 
         $sanitizedFields = [];
-        foreach($fields as $name => $field) {
+        foreach ($fields as $name => $field) {
             if (is_array($field)) {
                 $indent++;
                 $sanitizedFields[] = sprintf(
@@ -344,17 +350,23 @@ abstract class AbstractBuilder implements BuilderInterface
                     $this->tabs($indent - 1)
                 );
                 $indent--;
-            } else if ($field instanceof Fragment) {
-                $sanitizedFields[] = sprintf('...%s', $field->getName());
-            } else if ($field instanceof Directive) {
-                $sanitizedFields[] = $this->buildDirective($name, $field);
-            } else if (!in_array($field, self::$scalarTypes)) {
-                if (!preg_match(self::$regexValidateName, $field)) {
-                    throw new Exception\QueryBuilderException(
-                        sprintf('Invalid field name "%s" must match %s', $field, self::$regexValidateName)
-                    );
+            } else {
+                if ($field instanceof Fragment) {
+                    $sanitizedFields[] = sprintf('...%s', $field->getName());
+                } else {
+                    if ($field instanceof Directive) {
+                        $sanitizedFields[] = $this->buildDirective($name, $field);
+                    } else {
+                        if (!in_array($field, self::$scalarTypes)) {
+                            if (!preg_match(self::$regexValidateName, $field)) {
+                                throw new Exception\QueryBuilderException(
+                                    sprintf('Invalid field name "%s" must match %s', $field, self::$regexValidateName)
+                                );
+                            }
+                            $sanitizedFields[] = $field;
+                        }
+                    }
                 }
-                $sanitizedFields[] = $field;
             }
         }
 
@@ -368,18 +380,18 @@ abstract class AbstractBuilder implements BuilderInterface
     protected function buildFragments()
     {
         $sanitizedFragments = [];
-        foreach($this->fields as $field) {
+        foreach ($this->fields as $field) {
             $field = $field['fields'];
             if (!($field instanceof Fragment)) {
                 continue;
             }
-            
+
             $sanitizedFragments[] = sprintf(
-                    "fragment %s on %s {\n%s%s\n}\n",
-                    $field->getName(),
-                    $field->getOnType(),
-                    $this->tabs(3),
-                    $this->buildFields($field->getFields())
+                "fragment %s on %s {\n%s%s\n}\n",
+                $field->getName(),
+                $field->getOnType(),
+                $this->tabs(3),
+                $this->buildFields($field->getFields())
             );
         }
 
@@ -387,12 +399,12 @@ abstract class AbstractBuilder implements BuilderInterface
         if ($sanitizedFragments) {
             $fragments = "\n" . join("\n\n", $sanitizedFragments);
         }
-        
+
         return $fragments;
     }
 
     /**
-     * @param string $name
+     * @param string    $name
      * @param Directive $directive
      *
      * @return string
@@ -414,7 +426,7 @@ abstract class AbstractBuilder implements BuilderInterface
                 $this->tabs(3)
             );
         }
-        
+
         return sprintf(
             "%s %s(%s)%s",
             $name,

@@ -1,4 +1,5 @@
 <?php
+
 namespace Deskpro\API\GraphQL;
 
 use GuzzleHttp\ClientInterface as HTTPClientInterface;
@@ -9,35 +10,36 @@ use GuzzleHttp\ClientInterface as HTTPClientInterface;
 interface ClientInterface
 {
     /**
-     * @param string $operationName
+     * @param string       $operationName
      * @param array|string $args
+     *
      * @return QueryBuilderInterface
      */
     public function createQuery($operationName, $args = []);
 
     /**
-     * @param string $operationName
+     * @param string       $operationName
      * @param array|string $args
+     *
      * @return MutationBuilderInterface
      */
     public function createMutation($operationName, $args = []);
 
     /**
      * @param QueryBuilderInterface|string $query
-     * @param array $variables
+     * @param array                        $variables
      *
      * @return array
      *
-     * @throws Exception\InvalidResponseException
-     * @throws Exception\QueryErrorException
+     * @throws Exception\GraphQLException
      */
     public function execute($query, array $variables = []);
-    
+
     /**
      * Sets the person ID and authentication token
      *
-     * @param int $personId The ID of the person being authenticated
-     * @param string $token The authentication token
+     * @param int    $personId The ID of the person being authenticated
+     * @param string $token    The authentication token
      *
      * @return $this
      */
@@ -46,8 +48,8 @@ interface ClientInterface
     /**
      * Sets the person ID and authentication key
      *
-     * @param int $personId The ID of the person being authenticated
-     * @param string $key The authentication key
+     * @param int    $personId The ID of the person being authenticated
+     * @param string $key      The authentication key
      *
      * @return $this
      */

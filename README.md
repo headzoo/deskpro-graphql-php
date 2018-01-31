@@ -52,15 +52,10 @@ $query = '
     }
 ';
 
-try {
-    $data = $client->execute($query, [
-        'id' => 1
-    ]);
-    print_r($data);
-    
-} catch (GraphQL\Exception\GraphQLException $e) {
-    echo $e->getMessage();
-}
+$data = $client->execute($query, [
+    'id' => 1
+]);
+print_r($data);
 ```
 
 #### Query Builder
@@ -81,15 +76,10 @@ $query->field('content_get_news', 'id: $id', [
     'content'
 ]);
 
-try {
-    $data = $query->execute([
-        'id' => 1
-    ]);
-    print_r($data);
-    
-} catch (GraphQL\Exception\GraphQLException $e) {
-    echo $e->getMessage();
-}
+$data = $query->execute([
+    'id' => 1
+]);
+print_r($data);
 ```
 
 The query created by the builder.
@@ -120,18 +110,13 @@ $query = $client->createQuery('GetNews', [
         'content'
     ]);
 
-try {
-    $rows = [];
-    $ids  = [1, 2, 3];
-    foreach($ids as $id) {
-        $rows[] = $query->execute(['id' => $id]);
-    }
-
-    print_r($rows);
-    
-} catch (GraphQL\Exception\GraphQLException $e) {
-    echo $e->getMessage();
+$rows = [];
+$ids  = [1, 2, 3];
+foreach($ids as $id) {
+    $rows[] = $query->execute(['id' => $id]);
 }
+
+print_r($rows);
 ```
 
 #### Multiple Fields
@@ -160,16 +145,11 @@ $query = $client->createQuery('GetNews', [
         ]
     ]);
 
-try {
-    $data = $query->execute([
-        'newsId'    => 1,
-        'articleId' => 100
-    ]);
-    print_r($data);
-    
-} catch (GraphQL\Exception\GraphQLException $e) {
-    echo $e->getMessage();
-}
+$data = $query->execute([
+    'newsId'    => 1,
+    'articleId' => 100
+]);
+print_r($data);
 ```
 
 The query created by the builder.
@@ -215,16 +195,11 @@ $query = $client->createQuery('GetNews', [
         'content'
     ]);
 
-try {
-    $data = $query->execute([
-        'id1' => 1,
-        'id2' => 2
-    ]);
-    print_r($data);
-    
-} catch (GraphQL\Exception\GraphQLException $e) {
-    echo $e->getMessage();
-}
+$data = $query->execute([
+    'id1' => 1,
+    'id2' => 2
+]);
+print_r($data);
 ```
 
 The query created by the builder.
@@ -265,16 +240,11 @@ $query = $client->createQuery('GetNews', [
     ->field('news1: content_get_news', 'id: $id1', $fragment)
     ->field('news2: content_get_news', 'id: $id2', $fragment);
 
-try {
-    $data = $query->execute([
-        'id1' => 1,
-        'id2' => 100
-    ]);
-    print_r($data);
-    
-} catch (GraphQL\Exception\GraphQLException $e) {
-    echo $e->getMessage();
-}
+$data = $query->execute([
+    'id1' => 1,
+    'id2' => 100
+]);
+print_r($data);
 ```
 
 The query created by the builder.
@@ -404,18 +374,13 @@ $mutation = '
     }
 ';
 
-try {
-    $data = $client->execute($mutation, [
-        'id'      => 100,
-        'article' => [
-            'title' => 'Hello, World!'
-        ]
-    ]);
-    print_r($data);
-    
-} catch (GraphQL\Exception\GraphQLException $e) {
-    echo $e->getMessage();
-}
+$data = $client->execute($mutation, [
+    'id'      => 100,
+    'article' => [
+        'title' => 'Hello, World!'
+    ]
+]);
+print_r($data);
 ```
 
 #### Mutations Builder
@@ -434,18 +399,13 @@ $mutation = $client->createMutation('UpdateArticle', [
 ]);
 $mutation->field('content_update_articles', 'id: $id, article: $article');
 
-try {
-    $data = $mutation->execute([
-        'id'      => 100,
-        'article' => [
-            'title' => 'Hello, World!'
-        ]
-    ]);
-    print_r($data);
-    
-} catch (GraphQL\Exception\GraphQLException $e) {
-    echo $e->getMessage();
-}
+$data = $mutation->execute([
+    'id'      => 100,
+    'article' => [
+        'title' => 'Hello, World!'
+    ]
+]);
+print_r($data);
 ```
 
 The mutation created by the builder.
