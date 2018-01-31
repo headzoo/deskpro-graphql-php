@@ -43,6 +43,15 @@ interface BuilderInterface
      * @return Directive
      */
     public function skipIf($condition, $fields = []);
+
+    /**
+     * @param string $name
+     * @param string $onType
+     * @param array  $fields
+     *
+     * @return Fragment
+     */
+    public function fragment($name, $onType, $fields = []);
     
     /**
      * @return string

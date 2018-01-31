@@ -115,10 +115,7 @@ abstract class AbstractBuilder implements BuilderInterface
     }
 
     /**
-     * @param string $condition
-     * @param array $fields
-     *
-     * @return Directive
+     * {@inheritdoc}
      */
     public function includeIf($condition, $fields = [])
     {
@@ -130,10 +127,7 @@ abstract class AbstractBuilder implements BuilderInterface
     }
 
     /**
-     * @param string $condition
-     * @param array $fields
-     *
-     * @return Directive
+     * {@inheritdoc}
      */
     public function skipIf($condition, $fields = [])
     {
@@ -142,6 +136,14 @@ abstract class AbstractBuilder implements BuilderInterface
         }
 
         return new Directive('@skip', $condition, $fields);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function fragment($name, $onType, $fields = [])
+    {
+        return new Fragment($name, $onType, $fields);
     }
 
     /**

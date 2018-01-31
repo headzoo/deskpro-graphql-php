@@ -268,6 +268,20 @@ fragment news_fragment on News {
 }
 ```
 
+The fragment shortcut method `fragment()` may also be used.
+
+```php
+<?php
+$fragment = $query->fragment('news_fragment', 'News', [
+   'title',
+   'content' 
+]);
+
+$query = $client->createQuery('GetNews', '$id1: ID!, $id2: ID!')
+    ->field('news1: content_get_news', 'id: $id1', $fragment)
+    ->field('news2: content_get_news', 'id: $id2', $fragment);
+```
+
 #### Directives
 Use the `@include` and `@skip` directives to control which fields are returned.
 
