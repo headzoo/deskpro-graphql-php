@@ -12,20 +12,18 @@ $client = new GraphQL\Client('http://deskpro-dev.com');
 $client->setAuthKey(1, 'dev-admin-code');
 $client->setLogger($logger);
 
-$query = $client->createQuery('GetNews', [
-    '$newsId'    => 'ID!',
-    '$articleId' => 'ID!',
-])->field('content_get_news', 'id: $newsId', [
-    'title',
-    'content'
-])->field('content_get_articles', 'id: $articleId', [
-    'title',
-    'content',
-    'categories' => [
-        'id',
-        'title'
-    ]
-]);
+$query = $client->createQuery('GetNews', '$newsId: ID!, $articleId: ID!')
+    ->field('content_get_news', 'id: $newsId', [
+        'title',
+        'content'
+    ])->field('content_get_articles', 'id: $articleId', [
+        'title',
+        'content',
+        'categories' => [
+            'id',
+            'title'
+        ]
+    ]);
 
 $data = $query->execute([
     'newsId' => 1,

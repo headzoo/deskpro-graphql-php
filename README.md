@@ -62,9 +62,7 @@ use Deskpro\API\GraphQL;
 $client = new GraphQL\Client('https://deskpro.company.com');
 $client->setAuthKey(1, 'dev-admin-code');
 
-$query = $client->createQuery('GetNews', [
-    '$id' => 'ID!'
-]);
+$query = $client->createQuery('GetNews', '$id: ID!');
 $query->field('content_get_news', 'id: $id', [
     'title',
     'content'
@@ -101,12 +99,11 @@ use Deskpro\API\GraphQL;
 $client = new GraphQL\Client('https://deskpro.company.com');
 $client->setAuthKey(1, 'dev-admin-code');
 
-$query = $client->createQuery('GetNews', [
-    '$id' => 'ID!'
-])->field('content_get_news', 'id: $id', [
-    'title',
-    'content'
-]);
+$query = $client->createQuery('GetNews', '$id: ID!')
+    ->field('content_get_news', 'id: $id', [
+        'title',
+        'content'
+    ]);
 
 try {
     $rows = [];
@@ -130,20 +127,18 @@ use Deskpro\API\GraphQL;
 
 $client = new GraphQL\Client('http://deskpro-dev.com');
 
-$query = $client->createQuery('GetNews', [
-    '$newsId'    => 'ID!',
-    '$articleId' => 'ID!'
-])->field('content_get_news', 'id: $newsId', [
-    'title',
-    'content'
-])->field('content_get_articles', 'id: $articleId', [
-    'title',
-    'content',
-    'categories' => [
-        'id',
-        'title'
-    ]
-]);
+$query = $client->createQuery('GetNews', '$newsId: ID!, $articleId: ID!')
+    ->field('content_get_news', 'id: $newsId', [
+        'title',
+        'content'
+    ])->field('content_get_articles', 'id: $articleId', [
+        'title',
+        'content',
+        'categories' => [
+            'id',
+            'title'
+        ]
+    ]);
 
 try {
     $data = $query->execute([
@@ -187,16 +182,14 @@ use Deskpro\API\GraphQL;
 $client = new GraphQL\Client('https://deskpro.company.com');
 $client->setAuthKey(1, 'dev-admin-code');
 
-$query = $client->createQuery('GetNews', [
-    '$id1' => 'ID!',
-    '$id2' => 'ID!'
-])->field('news1: content_get_news', 'id: $id1', [
-    'title',
-    'content'
-])->field('news2: content_get_news', 'id: $id2', [
-    'title',
-    'content'
-]);
+$query = $client->createQuery('GetNews', '$id1: ID!, $id2: ID!')
+    ->field('news1: content_get_news', 'id: $id1', [
+        'title',
+        'content'
+    ])->field('news2: content_get_news', 'id: $id2', [
+        'title',
+        'content'
+    ]);
 
 try {
     $data = $query->execute([
@@ -266,10 +259,7 @@ use Deskpro\API\GraphQL;
 $client = new GraphQL\Client('https://deskpro.company.com');
 $client->setAuthKey(1, 'dev-admin-code');
 
-$mutation = $client->createMutation('UpdateArticle', [
-    '$id'      => 'Int',
-    '$article' => 'ArticleTypeInput!'
-]);
+$mutation = $client->createMutation('UpdateArticle', '$id: Int, $article: ArticleTypeInput!');
 $mutation->field('content_update_articles', 'id: $id, article: $article');
 
 try {
