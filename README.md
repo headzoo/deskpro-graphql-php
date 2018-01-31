@@ -125,7 +125,7 @@ try {
 <?php
 use Deskpro\API\GraphQL;
 
-$client = new GraphQL\Client('http://deskpro-dev.com');
+$client = new GraphQL\Client('https://deskpro.company.com');
 
 $query = $client->createQuery('GetNews', '$newsId: ID!, $articleId: ID!')
     ->field('content_get_news', 'id: $newsId', [
