@@ -419,6 +419,32 @@ mutation UpdateArticle ($id: Int, $article: ArticleTypeInput!) {
 }
 ```
 
+## Types
+Use the `Types` class to define type values.
+
+```php
+<?php
+use Deskpro\API\GraphQL;
+
+$client = new GraphQL\Client('https://deskpro.company.com');
+
+$query = $client->createQuery('GetNews', [
+    '$newsId'    => GraphQL\Type::id(false),
+    '$articleId' => GraphQL\Type::id(false)
+    ])
+    ->field('content_get_news', 'id: $newsId', [
+        'title',
+        'content'
+    ])->field('content_get_articles', 'id: $articleId', [
+        'title',
+        'content',
+        'categories' => [
+            'id',
+            'title'
+        ]
+    ]);
+```
+
 
 ## Default Headers
 Custom headers may be sent with each request by passing them to the `setDefaultHeaders()` method.

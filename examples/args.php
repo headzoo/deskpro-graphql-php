@@ -7,7 +7,7 @@ $client = new GraphQL\Client('http://deskpro-dev.com');
 $client->setAuthKey(1, 'dev-admin-code');
 
 $query = $client->createQuery('GetNews', [
-    '$articleId' => 'ID!'
+    '$articleId' => GraphQL\Type::id(false)
 ])
 ->field('content_get_articles',
     [
