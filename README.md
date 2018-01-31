@@ -141,6 +141,7 @@ try {
 use Deskpro\API\GraphQL;
 
 $client = new GraphQL\Client('https://deskpro.company.com');
+$client->setAuthKey(1, 'dev-admin-code');
 
 $query = $client->createQuery('GetNews', [
         '$newsId'    => GraphQL\Type::id(false),
@@ -149,7 +150,8 @@ $query = $client->createQuery('GetNews', [
     ->field('content_get_news', 'id: $newsId', [
         'title',
         'content'
-    ])->field('content_get_articles', 'id: $articleId', [
+    ])
+    ->field('content_get_articles', 'id: $articleId', [
         'title',
         'content',
         'categories' => [
@@ -207,7 +209,8 @@ $query = $client->createQuery('GetNews', [
     ->field('news1: content_get_news', 'id: $id1', [
         'title',
         'content'
-    ])->field('news2: content_get_news', 'id: $id2', [
+    ])
+    ->field('news2: content_get_news', 'id: $id2', [
         'title',
         'content'
     ]);
@@ -339,17 +342,6 @@ $query->field('content_get_articles', 'id: $id', [
         'id'
     ])
 ]);
-
-try {
-    $data = $query->execute([
-        'id'             => 1,
-        'withCategories' => true
-    ]);
-    print_r($data);
-    
-} catch (GraphQL\Exception\GraphQLException $e) {
-    echo $e->getMessage();
-}
 ```
 
 The query created by the builder.
@@ -436,7 +428,10 @@ use Deskpro\API\GraphQL;
 $client = new GraphQL\Client('https://deskpro.company.com');
 $client->setAuthKey(1, 'dev-admin-code');
 
-$mutation = $client->createMutation('UpdateArticle', '$id: Int, $article: ArticleTypeInput!');
+$mutation = $client->createMutation('UpdateArticle', [
+    '$id'      => GraphQL\Type::int(),
+    '$article' => GraphQL\Type::object('ArticleTypeInput', false)
+]);
 $mutation->field('content_update_articles', 'id: $id, article: $article');
 
 try {
@@ -462,7 +457,7 @@ mutation UpdateArticle ($id: Int, $article: ArticleTypeInput!) {
 ```
 
 ## Types
-Use type type classes to assign type values. Available classes are `TypeID`, `TypeInt`, `TypeFloat`, `TypeString`, and `TypeBoolean`. Use types types in conjunction with `TypeListOf` to define lists.
+Use type type classes to assign type values. Available classes are `TypeID`, `TypeInt`, `TypeFloat`, `TypeString`, `TypeBoolean`, and `TypeObject`. Use types types in conjunction with `TypeListOf` to define lists.
 
 ```php
 <?php
@@ -472,7 +467,8 @@ $client = new GraphQL\Client('https://deskpro.company.com');
 
 $query = $client->createQuery('GetNews', [
     '$newsId'    => new GraphQL\TypeID(false),
-    '$articleId' => new GraphQL\TypeID(false)
+    '$articleId' => new GraphQL\TypeID(false),
+    '$ticket'    => new GraphQL\TypeObject('Ticket')
 ]);
 
 $query = $client->createQuery('GetNewsItems', [
@@ -490,7 +486,8 @@ $client = new GraphQL\Client('https://deskpro.company.com');
 
 $query = $client->createQuery('GetNews', [
     '$newsId'    => GraphQL\Type::id(false),
-    '$articleId' => GraphQL\Type::id(false)
+    '$articleId' => GraphQL\Type::id(false),
+    '$ticket'    => GraphQL\Type::object('Ticket')
 ]);
 
 $query = $client->createQuery('GetNewsItems', [
@@ -508,7 +505,8 @@ $client = new GraphQL\Client('https://deskpro.company.com');
 
 $query = $client->createQuery('GetNews', [
     '$newsId'    => 'ID!',
-    '$articleId' => 'ID!'
+    '$articleId' => 'ID!',
+    '$ticket'    => 'Ticket'
 ]);
 
 $query = $client->createQuery('GetNewsItems', [

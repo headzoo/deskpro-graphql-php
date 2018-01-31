@@ -62,6 +62,17 @@ abstract class Type
     }
 
     /**
+     * @param string $className
+     * @param bool $nullable
+     *
+     * @return TypeObject
+     */
+    public static function object($className, $nullable = true)
+    {
+        return new TypeObject($className, $nullable);
+    }
+
+    /**
      * @param Type $type
      * @param bool $nullable
      *

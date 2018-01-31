@@ -49,6 +49,11 @@ class TypeTest extends TestCase
             [Type::boolean(false), 'Boolean!'],
             [Type::listOf(Type::boolean()), '[Boolean]'],
             [Type::listOf(Type::boolean(), false), '[Boolean]!'],
+
+            [Type::object('Ticket'), 'Ticket'],
+            [Type::object('Ticket', false), 'Ticket!'],
+            [Type::listOf(Type::object('Ticket')), '[Ticket]'],
+            [Type::listOf(Type::object('Ticket'), false), '[Ticket]!'],
         ];
     }
 }
