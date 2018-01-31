@@ -73,7 +73,9 @@ use Deskpro\API\GraphQL;
 $client = new GraphQL\Client('https://deskpro.company.com');
 $client->setAuthKey(1, 'dev-admin-code');
 
-$query = $client->createQuery('GetNews', '$id: ID!');
+$query = $client->createQuery('GetNews', [
+    '$id' => GraphQL\Type::id(false)
+]);
 $query->field('content_get_news', 'id: $id', [
     'title',
     'content'
@@ -110,7 +112,9 @@ use Deskpro\API\GraphQL;
 $client = new GraphQL\Client('https://deskpro.company.com');
 $client->setAuthKey(1, 'dev-admin-code');
 
-$query = $client->createQuery('GetNews', '$id: ID!')
+$query = $client->createQuery('GetNews', [
+        '$id' => GraphQL\Type::id(false)
+    ])
     ->field('content_get_news', 'id: $id', [
         'title',
         'content'
@@ -138,7 +142,10 @@ use Deskpro\API\GraphQL;
 
 $client = new GraphQL\Client('https://deskpro.company.com');
 
-$query = $client->createQuery('GetNews', '$newsId: ID!, $articleId: ID!')
+$query = $client->createQuery('GetNews', [
+        '$newsId'    => GraphQL\Type::id(false),
+        '$articleId' => GraphQL\Type::id(false)
+    ])
     ->field('content_get_news', 'id: $newsId', [
         'title',
         'content'
@@ -193,7 +200,10 @@ use Deskpro\API\GraphQL;
 $client = new GraphQL\Client('https://deskpro.company.com');
 $client->setAuthKey(1, 'dev-admin-code');
 
-$query = $client->createQuery('GetNews', '$id1: ID!, $id2: ID!')
+$query = $client->createQuery('GetNews', [
+        '$id1' => GraphQL\Type::id(false),
+        '$id2' => GraphQL\Type::id(false)
+    ])
     ->field('news1: content_get_news', 'id: $id1', [
         'title',
         'content'
@@ -245,13 +255,17 @@ $fragment = new GraphQL\Fragment('news_fragment', 'News', [
    'content' 
 ]);
 
-$query = $client->createQuery('GetNews', '$id1: ID!, $id2: ID!')
+$query = $client->createQuery('GetNews', [
+        '$id1' => GraphQL\Type::id(false),
+        '$id2' => GraphQL\Type::id(false)
+    ])
     ->field('news1: content_get_news', 'id: $id1', $fragment)
     ->field('news2: content_get_news', 'id: $id2', $fragment);
 
 try {
     $data = $query->execute([
-        'id' => 1
+        'id1' => 1,
+        'id2' => 100
     ]);
     print_r($data);
     
@@ -283,12 +297,20 @@ The fragment shortcut method `fragment()` may also be used.
 
 ```php
 <?php
+use Deskpro\API\GraphQL;
+
+$client = new GraphQL\Client('https://deskpro.company.com');
+$client->setAuthKey(1, 'dev-admin-code');
+
 $fragment = $query->fragment('news_fragment', 'News', [
    'title',
-   'content' 
+   'content'
 ]);
 
-$query = $client->createQuery('GetNews', '$id1: ID!, $id2: ID!')
+$query = $client->createQuery('GetNews', [
+        '$id1' => GraphQL\Type::id(false),
+        '$id2' => GraphQL\Type::id(false)
+    ])
     ->field('news1: content_get_news', 'id: $id1', $fragment)
     ->field('news2: content_get_news', 'id: $id2', $fragment);
 ```
@@ -304,20 +326,23 @@ $client = new GraphQL\Client('https://deskpro.company.com');
 $client->setAuthKey(1, 'dev-admin-code');
 
 $query = $client->createQuery('GetNews', [
-    '$id' => 'ID!',
-    '$withCategories' => 'Boolean!'
+    '$id'             => GraphQL\Type::id(false),
+    '$withCategories' => GraphQL\Type::boolean(false)
 ]);
 $query->field('content_get_articles', 'id: $id', [
     'title',
     'categories' => new GraphQL\Directive('@include', 'if: $withCategories', [
         'id',
         'title'
+    ]),
+    'tags' => new GraphQL\Directive('@skip', '$skipTags', [
+        'id'
     ])
 ]);
 
 try {
     $data = $query->execute([
-        'id' => 1,
+        'id'             => 1,
         'withCategories' => true
     ]);
     print_r($data);
@@ -337,6 +362,9 @@ query GetNews ($id: ID!, $withCategories: Boolean!) {
                 id
                 title
             }
+            tags @skip(id: $skipTags) {
+                id
+            }
     }
 }
 ```
@@ -345,11 +373,24 @@ The directive shortcut methods `includeIf()` and `skipIf()` may also be used.
 
 ```php
 <?php
+use Deskpro\API\GraphQL;
+
+$client = new GraphQL\Client('https://deskpro.company.com');
+$client->setAuthKey(1, 'dev-admin-code');
+
+$query = $client->createQuery('GetNews', [
+    '$id'             => GraphQL\Type::id(false),
+    '$withCategories' => GraphQL\Type::boolean(false)
+]);
+
 $query->field('content_get_articles', 'id: $id', [
     'title',
     'categories' => $query->includeIf('$withCategories', [
         'id',
         'title'
+    ]),
+    'tags'       => $query->skipIf('$skipTags', [
+        'id'
     ])
 ]);
 ```

@@ -242,6 +242,38 @@ class QueryBuilderTest extends GraphQLTestCase
     /**
      * @throws \Deskpro\API\GraphQL\Exception\QueryBuilderException
      */
+    public function testFieldAliasAsString()
+    {
+        $expected = '
+            query GetNews ($id: ID!) {
+                news1: content_get_news(id: $newsId)
+            }
+        ';
+
+        $fixture = new QueryBuilder($this->clientMock, 'GetNews', '$id: ID!');
+        $fixture->field('news1: content_get_news', 'id: $newsId');
+        $this->assertGraphQLQueriesAreEqual($expected, $fixture->getQuery());
+    }
+
+    /**
+     * @throws \Deskpro\API\GraphQL\Exception\QueryBuilderException
+     */
+    public function testFieldAliasAsArray()
+    {
+        $expected = '
+            query GetNews ($id: ID!) {
+                news1: content_get_news(id: $newsId)
+            }
+        ';
+
+        $fixture = new QueryBuilder($this->clientMock, 'GetNews', '$id: ID!');
+        $fixture->field(['news1', 'content_get_news'], 'id: $newsId');
+        $this->assertGraphQLQueriesAreEqual($expected, $fixture->getQuery());
+    }
+
+    /**
+     * @throws \Deskpro\API\GraphQL\Exception\QueryBuilderException
+     */
     public function testExecute()
     {
         $fixture = new QueryBuilder($this->clientMock, 'GetNews', '$id: ID!');

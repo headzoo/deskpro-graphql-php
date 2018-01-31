@@ -79,7 +79,10 @@ abstract class AbstractBuilder implements BuilderInterface
     public function field($name, $args = [], $fields = [])
     {
         $alias = null;
-        if (preg_match('/^(.*?)\s*:\s*(.*?)$/i', $name, $matches)) {
+        if (is_array($name)) {
+            $alias = $name[0];
+            $name  = $name[1];
+        } else if (preg_match('/^(.*?)\s*:\s*(.*?)$/i', $name, $matches)) {
             $alias = $matches[1];
             $name  = $matches[2];
         }

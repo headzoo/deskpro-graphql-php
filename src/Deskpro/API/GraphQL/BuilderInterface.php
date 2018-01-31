@@ -14,7 +14,7 @@ interface BuilderInterface
     public function getOperationType();
     
     /**
-     * @param string $name
+     * @param string|array $name
      * @param array $args
      * @param array $fields
      *
