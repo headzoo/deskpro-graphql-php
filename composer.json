@@ -33,7 +33,6 @@
         "psr/log": "^1.0"
     },
     "require-dev": {
-        "symfony/var-dumper": "^4.0",
         "phpunit/phpunit": "^4.8",
         "monolog/monolog": "^1.23"
     }
