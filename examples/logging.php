@@ -6,10 +6,10 @@ use Monolog\Handler\StreamHandler;
 require(__DIR__ . '/../vendor/autoload.php');
 
 $logger = new Logger('GraphQL');
-$logger->pushHandler(new StreamHandler('graphql.log', Logger::DEBUG));
+$logger->pushHandler(new StreamHandler('php://stdout', Logger::DEBUG));
 
 $client = new GraphQL\Client('http://deskpro-dev.com');
-$client->setAUthKey(1, 'dev-admin-code');
+$client->setAuthKey(1, 'dev-admin-code');
 $client->setLogger($logger);
 
 $query = $client->createQuery('GetNews', [
@@ -32,24 +32,3 @@ $data = $query->execute([
     'articleId' => 100
 ]);
 dump($data);
-die();
-
-/*$mutation = $client->createMutation('UpdateArticle', [
-    '$id'      => 'Int',
-    '$article' => 'ArticleTypeInput!'
-])->field('content_update_articles', 'id: $id, article: $article');*/
-
-/*$data = $mutation->execute([
-    'id'      => 100,
-    'article' => [
-        'title' => 'Hello, World!'
-    ]
-]);
-dump($data);
-die();*/
-
-$query = $client->createQuery('GetNews', '$id: ID!');
-$query->field('content_get_news', [], 'title');
-$data = $query->getQuery();
-echo $data;
-die("\n");
