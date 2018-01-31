@@ -15,6 +15,7 @@ PHP library that queries the Deskpro GraphQL API.
 * [Mutations](#mutations)
     * [Raw String](#mutations)
     * [Mutations Builder](#mutations-builder)
+* [Types](#types)
 * [Default Headers](#default-headers)
 * [Logging](#logging)
 * [Guzzle](#guzzle)
@@ -431,18 +432,7 @@ $client = new GraphQL\Client('https://deskpro.company.com');
 $query = $client->createQuery('GetNews', [
     '$newsId'    => GraphQL\Type::id(false),
     '$articleId' => GraphQL\Type::id(false)
-    ])
-    ->field('content_get_news', 'id: $newsId', [
-        'title',
-        'content'
-    ])->field('content_get_articles', 'id: $articleId', [
-        'title',
-        'content',
-        'categories' => [
-            'id',
-            'title'
-        ]
-    ]);
+]);
 ```
 
 
