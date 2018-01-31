@@ -2,6 +2,7 @@
 require_once('GraphQLTestCase.php');
 
 use Deskpro\API\GraphQL\ClientInterface;
+use Deskpro\API\GraphQL\Fragment;
 use Deskpro\API\GraphQL\QueryBuilder;
 
 /**
@@ -21,7 +22,10 @@ class QueryBuilderTest extends GraphQLTestCase
     {
         $this->clientMock = $this->getMockBuilder(ClientInterface::class)->getMock();
     }
-    
+
+    /**
+     * @throws \Deskpro\API\GraphQL\Exception\QueryBuilderException
+     */
     public function testOperationArgsAsString()
     {
         $expected = '
@@ -33,7 +37,10 @@ class QueryBuilderTest extends GraphQLTestCase
         $fixture = new QueryBuilder($this->clientMock, 'GetNews', '$id: ID!');
         $this->assertGraphQLQueriesAreEqual($expected, $fixture->getQuery());
     }
-    
+
+    /**
+     * @throws \Deskpro\API\GraphQL\Exception\QueryBuilderException
+     */
     public function testOperationArgsAsArray()
     {
         $expected = '
@@ -47,7 +54,10 @@ class QueryBuilderTest extends GraphQLTestCase
         ]);
         $this->assertGraphQLQueriesAreEqual($expected, $fixture->getQuery());
     }
-    
+
+    /**
+     * @throws \Deskpro\API\GraphQL\Exception\QueryBuilderException
+     */
     public function testOperationArgsAsAssocArray()
     {
         $expected = '
@@ -61,7 +71,10 @@ class QueryBuilderTest extends GraphQLTestCase
         ]);
         $this->assertGraphQLQueriesAreEqual($expected, $fixture->getQuery());
     }
-    
+
+    /**
+     * @throws \Deskpro\API\GraphQL\Exception\QueryBuilderException
+     */
     public function testOperationArgsWithoutDollarSign()
     {
         $expected = '
@@ -73,7 +86,10 @@ class QueryBuilderTest extends GraphQLTestCase
         $fixture = new QueryBuilder($this->clientMock, 'GetNews', 'id: ID!');
         $this->assertGraphQLQueriesAreEqual($expected, $fixture->getQuery());
     }
-    
+
+    /**
+     * @throws \Deskpro\API\GraphQL\Exception\QueryBuilderException
+     */
     public function testFieldArgsAsString()
     {
         $expected = '
@@ -86,7 +102,10 @@ class QueryBuilderTest extends GraphQLTestCase
         $fixture->field('content_get_news', 'id: $newsId');
         $this->assertGraphQLQueriesAreEqual($expected, $fixture->getQuery());
     }
-    
+
+    /**
+     * @throws \Deskpro\API\GraphQL\Exception\QueryBuilderException
+     */
     public function testFieldArgsAsArray()
     {
         $expected = '
@@ -99,7 +118,10 @@ class QueryBuilderTest extends GraphQLTestCase
         $fixture->field('content_get_news', ['id: $newsId']);
         $this->assertGraphQLQueriesAreEqual($expected, $fixture->getQuery());
     }
-    
+
+    /**
+     * @throws \Deskpro\API\GraphQL\Exception\QueryBuilderException
+     */
     public function testFieldArgsAsAssocArray()
     {
         $expected = '
@@ -112,7 +134,10 @@ class QueryBuilderTest extends GraphQLTestCase
         $fixture->field('content_get_news', ['id' => '$newsId']);
         $this->assertGraphQLQueriesAreEqual($expected, $fixture->getQuery());
     }
-    
+
+    /**
+     * @throws \Deskpro\API\GraphQL\Exception\QueryBuilderException
+     */
     public function testFieldsAsString()
     {
         $expected = '
@@ -128,7 +153,10 @@ class QueryBuilderTest extends GraphQLTestCase
         $fixture->field('content_get_news', 'id: $newsId', 'title, content');
         $this->assertGraphQLQueriesAreEqual($expected, $fixture->getQuery());
     }
-    
+
+    /**
+     * @throws \Deskpro\API\GraphQL\Exception\QueryBuilderException
+     */
     public function testFieldsAsArray()
     {
         $expected = '
@@ -147,7 +175,10 @@ class QueryBuilderTest extends GraphQLTestCase
         ]);
         $this->assertGraphQLQueriesAreEqual($expected, $fixture->getQuery());
     }
-    
+
+    /**
+     * @throws \Deskpro\API\GraphQL\Exception\QueryBuilderException
+     */
     public function testGetQuerySingleField()
     {
         $expected = '
@@ -167,7 +198,10 @@ class QueryBuilderTest extends GraphQLTestCase
         
         $this->assertGraphQLQueriesAreEqual($expected, $fixture->getQuery());
     }
-    
+
+    /**
+     * @throws \Deskpro\API\GraphQL\Exception\QueryBuilderException
+     */
     public function testGetQueryMultipleFields()
     {
         $expected = '
@@ -203,7 +237,10 @@ class QueryBuilderTest extends GraphQLTestCase
         
         $this->assertGraphQLQueriesAreEqual($expected, $fixture->getQuery());
     }
-    
+
+    /**
+     * @throws \Deskpro\API\GraphQL\Exception\QueryBuilderException
+     */
     public function testExecute()
     {
         $fixture = new QueryBuilder($this->clientMock, 'GetNews', '$id: ID!');
@@ -211,5 +248,34 @@ class QueryBuilderTest extends GraphQLTestCase
             ->with($this->equalTo($fixture))
             ->willReturn([]);
         $fixture->execute(['id' => 1]);
+    }
+
+    /**
+     * @throws \Deskpro\API\GraphQL\Exception\QueryBuilderException
+     */
+    public function testFragment()
+    {
+        $expected = '
+            query GetNews ($id: ID!) {
+                content_get_news(id: $newsId) {
+                    ...test_fragment
+                }
+            }
+            
+            fragment test_fragment on Testing {
+                    title
+                    content
+            }
+        ';
+
+        $fragment = new Fragment('test_fragment', 'Testing', [
+            'title',
+            'content'
+        ]);
+
+        $fixture = new QueryBuilder($this->clientMock, 'GetNews', '$id: ID!');
+        $fixture->field('content_get_news', 'id: $newsId', $fragment);
+
+        $this->assertGraphQLQueriesAreEqual($expected, $fixture->getQuery());
     }
 }

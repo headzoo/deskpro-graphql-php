@@ -55,9 +55,11 @@ abstract class AbstractBuilder implements BuilderInterface
     /**
      * Constructor
      *
-     * @param ClientInterface $client Executes the query
-     * @param string $operationName Name of the operation
-     * @param array|string $operationArgs Operation arguments
+     * @param ClientInterface $client        Executes the query
+     * @param string          $operationName Name of the operation
+     * @param array|string    $operationArgs Operation arguments
+     *
+     * @throws Exception\QueryBuilderException
      */
     public function __construct(ClientInterface $client, $operationName, $operationArgs = [])
     {
@@ -84,12 +86,17 @@ abstract class AbstractBuilder implements BuilderInterface
 
         if (!preg_match(self::$regexValidateName, $name)) {
             throw new Exception\QueryBuilderException(
-                sprintf('Invalid field name must match %s', self::$regexValidateName)
+                sprintf('Invalid field name "%s" must match %s', $name, self::$regexValidateName)
             );
         }
         if ($alias && !preg_match(self::$regexValidateName, $alias)) {
             throw new Exception\QueryBuilderException(
-                sprintf('Invalid alias must match %s', self::$regexValidateName)
+                sprintf('Invalid alias "%s" must match %s', $alias, self::$regexValidateName)
+            );
+        }
+        if ($fields instanceof Fragment && !preg_match(self::$regexValidateName, $fields->getName())) {
+            throw new Exception\QueryBuilderException(
+                sprintf('Invalid fragment name "%s" must match %s', $fields->getName(), self::$regexValidateName)
             );
         }
 
@@ -122,7 +129,7 @@ abstract class AbstractBuilder implements BuilderInterface
     {
         if (!preg_match(self::$regexValidateName, $operationName)) {
             throw new Exception\QueryBuilderException(
-                sprintf('Invalid operation name, must match %s', self::$regexValidateName)
+                sprintf('Invalid operation name "%s" must match %s', $operationName, self::$regexValidateName)
             );
         }
 
@@ -161,6 +168,7 @@ abstract class AbstractBuilder implements BuilderInterface
 
     /**
      * @return string
+     * @throws Exception\QueryBuilderException
      */
     protected function build()
     {
@@ -174,19 +182,21 @@ abstract class AbstractBuilder implements BuilderInterface
         }
 
         $this->cache = sprintf(
-            "%s %s {\n%s\n}",
+            "%s %s {\n%s\n}\n%s",
             $this->getOperationType(),
             $this->buildOperation(),
-            rtrim($this->cache)
+            rtrim($this->cache),
+            $this->buildFragments()
         );
 
         return $this->cache;
     }
-    
+
     /**
      * @param array $values
      *
      * @return string
+     * @throws Exception\QueryBuilderException
      */
     protected function buildField(array $values)
     {
@@ -274,14 +284,17 @@ abstract class AbstractBuilder implements BuilderInterface
 
     /**
      * @param array|string $fields
-     * @param int $indent
+     * @param int          $indent
      *
      * @return string
+     * @throws Exception\QueryBuilderException
      */
     protected function buildFields($fields, $indent = 3)
     {
         if (is_string($fields)) {
             $fields = array_map('trim', explode(',', $fields));
+        } else if ($fields instanceof Fragment) {
+            $fields = [$fields];
         }
 
         $sanitizedFields = [];
@@ -296,12 +309,49 @@ abstract class AbstractBuilder implements BuilderInterface
                     $this->tabs($indent - 1)
                 );
                 $indent--;
+            } else if ($field instanceof Fragment) {
+                $sanitizedFields[] = sprintf('...%s', $field->getName());
             } else if (!in_array($field, self::$scalarTypes)) {
+                if (!preg_match(self::$regexValidateName, $field)) {
+                    throw new Exception\QueryBuilderException(
+                        sprintf('Invalid field name "%s" must match %s', $field, self::$regexValidateName)
+                    );
+                }
                 $sanitizedFields[] = $field;
             }
         }
 
         return join("\n" . $this->tabs($indent), $sanitizedFields);
+    }
+
+    /**
+     * @return string
+     * @throws Exception\QueryBuilderException
+     */
+    protected function buildFragments()
+    {
+        $sanitizedFragments = [];
+        foreach($this->fields as $field) {
+            $field = $field['fields'];
+            if (!($field instanceof Fragment)) {
+                continue;
+            }
+            
+            $sanitizedFragments[] = sprintf(
+                    "fragment %s on %s {\n%s%s\n}\n",
+                    $field->getName(),
+                    $field->getOnType(),
+                    $this->tabs(3),
+                    $this->buildFields($field->getFields())
+            );
+        }
+
+        $fragments = '';
+        if ($sanitizedFragments) {
+            $fragments = "\n" . join("\n\n", $sanitizedFragments);
+        }
+        
+        return $fragments;
     }
 
     /**

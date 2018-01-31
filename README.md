@@ -219,6 +219,48 @@ query GetNews ($id2: ID!, $id2: ID!) {
 }
 ```
 
+#### Fragments
+Fragments may be used to describe return fields.
+
+```php
+<?php
+use Deskpro\API\GraphQL;
+
+$client = new GraphQL\Client('https://deskpro.company.com');
+$client->setAuthKey(1, 'dev-admin-code');
+
+$fragment = new GraphQL\Fragment('news_fragment', 'News', [
+   'title',
+   'content' 
+]);
+$query = $client->createQuery('GetNews', '$id: ID!');
+$query->field('content_get_news', 'id: $id', $fragment);
+
+try {
+    $data = $query->execute([
+        'id' => 1
+    ]);
+    print_r($data);
+    
+} catch (GraphQL\Exception\GrapQLException $e) {
+    echo $e->getMessage();
+}
+```
+
+The query created by the builder.
+
+```
+query GetNews ($id: ID!) {
+    content_get_news(id: $id) {
+            ...news_fragment
+    }
+    
+    fragment news_fragment on News {
+            title
+            content
+    }
+}
+```
 
 ## Mutations
 Raw strings may be used.

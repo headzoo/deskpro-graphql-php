@@ -3,8 +3,16 @@
 use PHPUnit\Framework\TestCase;
 use Deskpro\API\GraphQL;
 
+/**
+ * 
+ */
 class VerifyOperationsTest extends TestCase
 {
+    protected function setUp()
+    {
+        $this->markTestIncomplete();
+    }
+    
     /**
      * @dataProvider providesQueries
      * 
@@ -41,6 +49,7 @@ class VerifyOperationsTest extends TestCase
      */
     public function providesQueries()
     {
+        return [];
         $queries = file_get_contents('http://deskpro-dev.com/api/v2/graphql/doc/queries.json');
         $queries = json_decode($queries, true);
         
