@@ -4,6 +4,12 @@ PHP library that queries the Deskpro GraphQL API.
 
 * [Installing](#installing)
 * [Queries](#queries)
+    * [Raw String](#queries)
+    * [Query Builder](#query-builder)
+    * [Multiple Fields](#multiple-fields)
+    * [Aliases](#aliases)
+    * [Fragments](#fragments)
+    * [Directives](#directives)
 * [Mutations](#mutations)
 * [Default Headers](#default-headers)
 * [Logging](#logging)
@@ -172,7 +178,7 @@ query GetNews ($newsId: ID!, $articleId: ID!) {
 }
 ```
 
-#### Field Alias
+#### Aliases
 Aliases must be used when querying multiple fields with the same name.
 
 ```php
