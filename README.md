@@ -2,6 +2,8 @@ Deskpro PHP GraphQL Client
 ==========================
 PHP library that queries the Deskpro GraphQL API.
 
+[![Build Status](https://travis-ci.org/headzoo/deskpro-graphql-php.svg?branch=master)](https://travis-ci.org/headzoo/deskpro-graphql-php)
+
 * [Installing](#installing)
 * [Queries](#queries)
     * [Raw String](#queries)
