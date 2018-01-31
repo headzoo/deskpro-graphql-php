@@ -47,7 +47,7 @@ try {
     ]);
     print_r($data);
     
-} catch (GraphQL\Exception\GrapQLException $e) {
+} catch (GraphQL\Exception\GraphQLException $e) {
     echo $e->getMessage();
 }
 ```
@@ -74,7 +74,7 @@ try {
     ]);
     print_r($data);
     
-} catch (GraphQL\Exception\GrapQLException $e) {
+} catch (GraphQL\Exception\GraphQLException $e) {
     echo $e->getMessage();
 }
 ```
@@ -114,7 +114,7 @@ try {
 
     print_r($rows);
     
-} catch (GraphQL\Exception\GrapQLException $e) {
+} catch (GraphQL\Exception\GraphQLException $e) {
     echo $e->getMessage();
 }
 ```
@@ -147,7 +147,7 @@ try {
     ]);
     print_r($data);
     
-} catch (GraphQL\Exception\GrapQLException $e) {
+} catch (GraphQL\Exception\GraphQLException $e) {
     echo $e->getMessage();
 }
 ```
@@ -198,7 +198,7 @@ try {
     ]);
     print_r($data);
     
-} catch (GraphQL\Exception\GrapQLException $e) {
+} catch (GraphQL\Exception\GraphQLException $e) {
     echo $e->getMessage();
 }
 ```
@@ -233,8 +233,10 @@ $fragment = new GraphQL\Fragment('news_fragment', 'News', [
    'title',
    'content' 
 ]);
-$query = $client->createQuery('GetNews', '$id: ID!');
-$query->field('content_get_news', 'id: $id', $fragment);
+
+$query = $client->createQuery('GetNews', '$id1: ID!, $id2: ID!')
+    ->field('news1: content_get_news', 'id: $id1', $fragment)
+    ->field('news2: content_get_news', 'id: $id2', $fragment);
 
 try {
     $data = $query->execute([
@@ -242,7 +244,7 @@ try {
     ]);
     print_r($data);
     
-} catch (GraphQL\Exception\GrapQLException $e) {
+} catch (GraphQL\Exception\GraphQLException $e) {
     echo $e->getMessage();
 }
 ```
@@ -250,15 +252,19 @@ try {
 The query created by the builder.
 
 ```
-query GetNews ($id: ID!) {
-    content_get_news(id: $id) {
+query GetNews ($id2: ID!, $id2: ID!) {
+    news1: content_get_news(id: $id1) {
             ...news_fragment
     }
     
-    fragment news_fragment on News {
-            title
-            content
+    news2: content_get_news(id: $id2) {
+            ...news_fragment
     }
+}
+
+fragment news_fragment on News {
+    title
+    content
 }
 ```
 
@@ -287,7 +293,7 @@ try {
     ]);
     print_r($data);
     
-} catch (GraphQL\Exception\GrapQLException $e) {
+} catch (GraphQL\Exception\GraphQLException $e) {
     echo $e->getMessage();
 }
 ```
@@ -313,7 +319,7 @@ try {
     ]);
     print_r($data);
     
-} catch (GraphQL\Exception\GrapQLException $e) {
+} catch (GraphQL\Exception\GraphQLException $e) {
     echo $e->getMessage();
 }
 ```
