@@ -115,6 +115,36 @@ abstract class AbstractBuilder implements BuilderInterface
     }
 
     /**
+     * @param string $condition
+     * @param array $fields
+     *
+     * @return Directive
+     */
+    public function includeIf($condition, $fields = [])
+    {
+        if (strpos($condition, 'if:') === false) {
+            $condition = 'if: ' . $condition;
+        }
+
+        return new Directive('@include', $condition, $fields);
+    }
+
+    /**
+     * @param string $condition
+     * @param array $fields
+     *
+     * @return Directive
+     */
+    public function skipIf($condition, $fields = [])
+    {
+        if (strpos($condition, 'if:') === false) {
+            $condition = 'if: ' . $condition;
+        }
+
+        return new Directive('@skip', $condition, $fields);
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getOperationName()
@@ -311,6 +341,8 @@ abstract class AbstractBuilder implements BuilderInterface
                 $indent--;
             } else if ($field instanceof Fragment) {
                 $sanitizedFields[] = sprintf('...%s', $field->getName());
+            } else if ($field instanceof Directive) {
+                $sanitizedFields[] = $this->buildDirective($name, $field);
             } else if (!in_array($field, self::$scalarTypes)) {
                 if (!preg_match(self::$regexValidateName, $field)) {
                     throw new Exception\QueryBuilderException(
@@ -352,6 +384,39 @@ abstract class AbstractBuilder implements BuilderInterface
         }
         
         return $fragments;
+    }
+
+    /**
+     * @param string $name
+     * @param Directive $directive
+     *
+     * @return string
+     * @throws Exception\QueryBuilderException
+     */
+    protected function buildDirective($name, Directive $directive)
+    {
+        $type = $directive->getType();
+        if ($type[0] !== '@') {
+            $type = '@' . $type;
+        }
+
+        $fields = $this->buildFields($directive->getFields(), 4);
+        if ($fields) {
+            $fields = sprintf(
+                " {\n%s%s\n%s}",
+                $this->tabs(4),
+                $fields,
+                $this->tabs(3)
+            );
+        }
+        
+        return sprintf(
+            "%s %s(%s)%s",
+            $name,
+            $type,
+            $directive->getCondition(),
+            $fields
+        );
     }
 
     /**

@@ -268,6 +268,68 @@ fragment news_fragment on News {
 }
 ```
 
+#### Directives
+Use the `@include` and `@skip` directives to control which fields are returned.
+
+```php
+<?php
+use Deskpro\API\GraphQL;
+
+$client = new GraphQL\Client('https://deskpro.company.com');
+$client->setAuthKey(1, 'dev-admin-code');
+
+$query = $client->createQuery('GetNews', [
+    '$id' => 'ID!',
+    '$withCategories' => 'Boolean!'
+]);
+$query->field('content_get_articles', 'id: $id', [
+    'title',
+    'categories' => new GraphQL\Directive('@include', 'if: $withCategories', [
+        'id',
+        'title'
+    ])
+]);
+
+try {
+    $data = $query->execute([
+        'id' => 1,
+        'withCategories' => true
+    ]);
+    print_r($data);
+    
+} catch (GraphQL\Exception\GraphQLException $e) {
+    echo $e->getMessage();
+}
+```
+
+The query created by the builder.
+
+```
+query GetNews ($id: ID!, $withCategories: Boolean!) {
+    content_get_articles(id: $id) {
+            title
+            categories @include(if: $withCategories) {
+                id
+                title
+            }
+    }
+}
+```
+
+The directive shortcut methods `includeIf()` and `skipIf()` may also be used.
+
+```php
+<?php
+$query->field('content_get_articles', 'id: $id', [
+    'title',
+    'categories' => $query->includeIf('$withCategories', [
+        'id',
+        'title'
+    ])
+]);
+```
+
+
 ## Mutations
 Raw strings may be used.
 

@@ -28,7 +28,22 @@ interface BuilderInterface
      */
     public function execute(array $args = []);
 
+    /**
+     * @param string $condition
+     * @param array $fields
+     *
+     * @return Directive
+     */
+    public function includeIf($condition, $fields = []);
 
+    /**
+     * @param string $condition
+     * @param array $fields
+     *
+     * @return Directive
+     */
+    public function skipIf($condition, $fields = []);
+    
     /**
      * @return string
      */

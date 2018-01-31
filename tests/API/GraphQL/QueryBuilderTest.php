@@ -2,6 +2,7 @@
 require_once('GraphQLTestCase.php');
 
 use Deskpro\API\GraphQL\ClientInterface;
+use Deskpro\API\GraphQL\Directive;
 use Deskpro\API\GraphQL\Fragment;
 use Deskpro\API\GraphQL\QueryBuilder;
 
@@ -275,6 +276,72 @@ class QueryBuilderTest extends GraphQLTestCase
 
         $fixture = new QueryBuilder($this->clientMock, 'GetNews', '$id: ID!');
         $fixture->field('content_get_news', 'id: $newsId', $fragment);
+
+        $this->assertGraphQLQueriesAreEqual($expected, $fixture->getQuery());
+    }
+
+    /**
+     * @throws \Deskpro\API\GraphQL\Exception\QueryBuilderException
+     */
+    public function testDirective()
+    {
+        $expected = '
+            query GetNews ($id: ID!, $withCategories: Boolean!) {
+                content_get_articles(id: $id) {
+                    title
+                    categories @include(if: $withCategories) {
+                        id
+                        content
+                    }
+                }
+            }
+        ';
+
+        $fixture = new QueryBuilder(
+                $this->clientMock,
+                'GetNews',
+                '$id: ID!, $withCategories: Boolean!'
+        );
+        $fixture->field('content_get_articles', 'id: $id', [
+            'title',
+            'categories' => new Directive('@include', 'if: $withCategories', [
+                'id',
+                'content'
+            ])
+        ]);
+
+        $this->assertGraphQLQueriesAreEqual($expected, $fixture->getQuery());
+    }
+
+    /**
+     * @throws \Deskpro\API\GraphQL\Exception\QueryBuilderException
+     */
+    public function testDirectiveShortcut()
+    {
+        $expected = '
+            query GetNews ($id: ID!, $withCategories: Boolean!) {
+                content_get_articles(id: $id) {
+                    title
+                    categories @include(if: $withCategories) {
+                        id
+                        content
+                    }
+                }
+            }
+        ';
+
+        $fixture = new QueryBuilder(
+            $this->clientMock,
+            'GetNews',
+            '$id: ID!, $withCategories: Boolean!'
+        );
+        $fixture->field('content_get_articles', 'id: $id', [
+            'title',
+            'categories' => $fixture->includeIf('$withCategories', [
+                'id',
+                'content'
+            ])
+        ]);
 
         $this->assertGraphQLQueriesAreEqual($expected, $fixture->getQuery());
     }
