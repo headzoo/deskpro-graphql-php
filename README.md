@@ -462,7 +462,7 @@ mutation UpdateArticle ($id: Int, $article: ArticleTypeInput!) {
 ```
 
 ## Types
-Use the `Types` class to define type values.
+Use type type classes to assign type values. Available classes are `TypeID`, `TypeInt`, `TypeFloat`, `TypeString`, and `TypeBoolean`. Use types types in conjunction with `TypeListOf` to define lists.
 
 ```php
 <?php
@@ -495,6 +495,24 @@ $query = $client->createQuery('GetNews', [
 
 $query = $client->createQuery('GetNewsItems', [
     '$ids'=> GraphQL\Type::listOf(GraphQL\Type::id())
+]);
+```
+
+You may also use plain strings.
+
+```php
+<?php
+use Deskpro\API\GraphQL;
+
+$client = new GraphQL\Client('https://deskpro.company.com');
+
+$query = $client->createQuery('GetNews', [
+    '$newsId'    => 'ID!',
+    '$articleId' => 'ID!'
+]);
+
+$query = $client->createQuery('GetNewsItems', [
+    '$ids'=> '[ID]'
 ]);
 ```
 
