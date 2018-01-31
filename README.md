@@ -11,6 +11,8 @@ PHP library that queries the Deskpro GraphQL API.
     * [Fragments](#fragments)
     * [Directives](#directives)
 * [Mutations](#mutations)
+    * [Raw String](#mutations)
+    * [Mutations Builder](#mutations-builder)
 * [Default Headers](#default-headers)
 * [Logging](#logging)
 * [Guzzle](#guzzle)
@@ -380,6 +382,7 @@ try {
 }
 ```
 
+#### Mutations Builder
 Using the mutations builder.
 
 ```php
