@@ -4,83 +4,124 @@ namespace Deskpro\API\GraphQL;
 /**
  * Class Type
  */
-class Type
+abstract class Type
 {
-    const ID = 'ID';
-    const INT = 'Int';
-    const FLOAT = 'Float';
-    const STRING = 'String';
-    const BOOLEAN = 'Boolean';
-    
+    /**
+     * @var bool
+     */
+    protected $nullable;
+
     /**
      * @param bool $nullable
      *
-     * @return string
+     * @return TypeID
      */
     public static function id($nullable = true)
     {
-        return self::nullable(self::ID, $nullable);
+        return new TypeID($nullable);
     }
 
     /**
      * @param bool $nullable
      *
-     * @return string
+     * @return TypeInt
      */
     public static function int($nullable = true)
     {
-        return self::nullable(self::INT, $nullable);
+        return new TypeInt($nullable);
     }
 
     /**
      * @param bool $nullable
      *
-     * @return string
+     * @return TypeFloat
      */
     public static function float($nullable = true)
     {
-        return self::nullable(self::FLOAT, $nullable);
+        return new TypeFloat($nullable);
     }
 
     /**
      * @param bool $nullable
      *
-     * @return string
+     * @return TypeString
      */
     public static function string($nullable = true)
     {
-        return self::nullable(self::STRING, $nullable);
+        return new TypeString($nullable);
     }
 
     /**
      * @param bool $nullable
      *
-     * @return string
+     * @return TypeBoolean
      */
     public static function boolean($nullable = true)
     {
-        return self::nullable(self::BOOLEAN, $nullable);
+        return new TypeBoolean($nullable);
     }
 
     /**
-     * @param string $type
+     * @param Type $type
      * @param bool $nullable
      *
      * @return string
      */
     public static function listOf($type, $nullable = true)
     {
-        return self::nullable('[' . $type . ']', $nullable);
+        return new TypeListOf($type, $nullable);
     }
 
     /**
-     * @param string $type
+     * Constructor
+     *
      * @param bool $nullable
+     */
+    public function __construct($nullable = false)
+    {
+        $this->nullable = $nullable;
+    }
+
+    /**
+     * @return string
+     */
+    public abstract function getValue();
+
+    /**
+     * @return bool
+     */
+    public function isNullable()
+    {
+        return $this->nullable;
+    }
+
+    /**
+     * @param bool $nullable
+     *
+     * @return $this
+     */
+    public function setNullable($nullable)
+    {
+        $this->nullable = $nullable;
+        
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->nullable($this);
+    }
+
+    /**
+     * @param Type $type
      *
      * @return string
      */
-    protected static function nullable($type, $nullable)
+    protected function nullable(Type $type)
     {
-        return $type . (!$nullable ? '!' : '');
+        return $type->isNullable() ? $type->getValue() : $type->getValue() . '!';
     }
 }

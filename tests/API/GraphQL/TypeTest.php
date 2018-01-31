@@ -16,7 +16,7 @@ class TypeTest extends TestCase
      */
     public function testID($actual, $expected)
     {
-        $this->assertEquals($expected, $actual);
+        $this->assertEquals($expected, (string)$actual);
     }
 
     /**

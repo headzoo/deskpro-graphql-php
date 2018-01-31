@@ -433,6 +433,10 @@ $query = $client->createQuery('GetNews', [
     '$newsId'    => GraphQL\Type::id(false),
     '$articleId' => GraphQL\Type::id(false)
 ]);
+
+$query = $client->createQuery('GetNewsItems', [
+    '$ids'=> GraphQL\Type::listOf(GraphQL\Type::id())
+]);
 ```
 
 
