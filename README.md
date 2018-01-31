@@ -430,6 +430,24 @@ use Deskpro\API\GraphQL;
 $client = new GraphQL\Client('https://deskpro.company.com');
 
 $query = $client->createQuery('GetNews', [
+    '$newsId'    => new GraphQL\TypeID(false),
+    '$articleId' => new GraphQL\TypeID(false)
+]);
+
+$query = $client->createQuery('GetNewsItems', [
+    '$ids'=> new GraphQL\TypeListOf(new GraphQL\TypeID())
+]);
+```
+
+Shortcut static methods may also be used.
+
+```php
+<?php
+use Deskpro\API\GraphQL;
+
+$client = new GraphQL\Client('https://deskpro.company.com');
+
+$query = $client->createQuery('GetNews', [
     '$newsId'    => GraphQL\Type::id(false),
     '$articleId' => GraphQL\Type::id(false)
 ]);
