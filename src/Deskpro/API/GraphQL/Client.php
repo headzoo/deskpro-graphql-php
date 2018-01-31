@@ -112,7 +112,9 @@ class Client implements ClientInterface
             'query'     => $query,
             'variables' => $variables
         ]);
-        $resp = $this->httpClient->send($req);
+        $resp = $this->httpClient->send($req, [
+            'http_errors' => false
+        ]);
 
         return $this->makeResponse($resp);
     }
@@ -228,12 +230,13 @@ class Client implements ClientInterface
 
     /**
      * @param ResponseInterface $resp
-     * 
+     *
      * @return array
-     * 
+     *
      * @throws Exception\InvalidResponseException
      * @throws Exception\NotFoundException
      * @throws Exception\QueryErrorException
+     * @throws Exception\AuthenticationException
      */
     protected function makeResponse(ResponseInterface $resp)
     {
@@ -243,6 +246,17 @@ class Client implements ClientInterface
         $json = json_decode($body, true);
         if ($json === null) {
             throw new Exception\InvalidResponseException('Unable to JSON decode response.');
+        }
+
+        switch($resp->getStatusCode()) {
+            case 401:
+            case 403:
+                $message = 'You must be authenticated to make this request.';
+                if (isset($json['message'])) {
+                    $message = $json['message'];
+                }
+                throw new Exception\AuthenticationException($message, 401);
+                break;
         }
         
         if (isset($json['errors'])) {

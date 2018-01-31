@@ -9,9 +9,10 @@ $logger = new Logger('GraphQL');
 $logger->pushHandler(new StreamHandler('graphql.log', Logger::DEBUG));
 
 $client = new GraphQL\Client('http://deskpro-dev.com');
+$client->setAUthKey(1, 'dev-admin-code');
 $client->setLogger($logger);
 
-/*$query = $client->createQuery('GetNews', [
+$query = $client->createQuery('GetNews', [
     '$newsId'    => 'ID!',
     '$articleId' => 'ID!',
 ])->field('content_get_news', 'id: $newsId', [
@@ -24,7 +25,14 @@ $client->setLogger($logger);
         'id',
         'title'
     ]
-]);*/
+]);
+
+$data = $query->execute([
+    'newsId' => 1,
+    'articleId' => 100
+]);
+dump($data);
+die();
 
 /*$mutation = $client->createMutation('UpdateArticle', [
     '$id'      => 'Int',

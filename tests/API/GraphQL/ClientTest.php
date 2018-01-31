@@ -273,4 +273,24 @@ class ClientTest extends TestCase
             'id' => 101
         ]);
     }
+
+    /**
+     * @expectedException \Deskpro\API\GraphQL\Exception\AuthenticationException
+     */
+    public function testExecuteThrowsAuthentication()
+    {
+        $body = json_encode([
+            'message' => 'Not authenticated'
+        ]);
+
+        $resp = new Response(401, [], $body);
+        $this->httpClient
+            ->expects($this->once())
+            ->method('send')
+            ->will($this->returnValue($resp));
+
+        $this->fixture->execute('', [
+            'id' => 101
+        ]);
+    }
 }
