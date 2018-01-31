@@ -110,13 +110,11 @@ $query = $client->createQuery('GetNews', [
         'content'
     ]);
 
-$rows = [];
-$ids  = [1, 2, 3];
+$ids = [1, 2, 3];
 foreach($ids as $id) {
-    $rows[] = $query->execute(['id' => $id]);
+    $data = $query->execute(['id' => $id]);
+    print_r($data);
 }
-
-print_r($rows);
 ```
 
 #### Multiple Fields
@@ -300,7 +298,8 @@ $client->setAuthKey(1, 'dev-admin-code');
 
 $query = $client->createQuery('GetNews', [
     '$id'             => GraphQL\Type::id(false),
-    '$withCategories' => GraphQL\Type::boolean(false)
+    '$withCategories' => GraphQL\Type::boolean(false),
+    '$skipTags'       => GraphQL\Type::boolean(false)
 ]);
 $query->field('content_get_articles', 'id: $id', [
     'title',
@@ -309,15 +308,22 @@ $query->field('content_get_articles', 'id: $id', [
         'title'
     ]),
     'tags' => new GraphQL\Directive('@skip', '$skipTags', [
-        'id'
+        'title'
     ])
 ]);
+
+$data = $query->execute([
+    'id'             => 1,
+    'withCategories' => true,
+    'skipTags'       => false
+]);
+print_r($data);
 ```
 
 The query created by the builder.
 
 ```
-query GetNews ($id: ID!, $withCategories: Boolean!) {
+query GetNews ($id: ID!, $withCategories: Boolean!, $skipTags: Boolean!) {
     content_get_articles(id: $id) {
             title
             categories @include(if: $withCategories) {
@@ -342,7 +348,8 @@ $client->setAuthKey(1, 'dev-admin-code');
 
 $query = $client->createQuery('GetNews', [
     '$id'             => GraphQL\Type::id(false),
-    '$withCategories' => GraphQL\Type::boolean(false)
+    '$withCategories' => GraphQL\Type::boolean(false),
+    '$skipTags'       => GraphQL\Type::boolean(false)
 ]);
 
 $query->field('content_get_articles', 'id: $id', [
@@ -351,8 +358,8 @@ $query->field('content_get_articles', 'id: $id', [
         'id',
         'title'
     ]),
-    'tags'       => $query->skipIf('$skipTags', [
-        'id'
+    'tags' => $query->skipIf('$skipTags', [
+        'title'
     ])
 ]);
 ```
@@ -499,7 +506,7 @@ use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
 $logger = new Logger('GraphQL');
-$logger->pushHandler(new StreamHandler('path/to/your.log', Logger::DEBUG));
+$logger->pushHandler(new StreamHandler('php:/stdout', Logger::DEBUG));
 
 $client = new GraphQL\Client('https://deskpro.company.com');
 $client->setLogger($logger);
@@ -518,8 +525,7 @@ $httpClient = new Client([
     'timeout' => 60
 ]);
 
-$client = new GraphQL\Client('https://deskpro.company.com');
-$client->setHTTPClient($guzzle);
+$client = new GraphQL\Client('https://deskpro.company.com', $httpClient);
 ```
 
 
