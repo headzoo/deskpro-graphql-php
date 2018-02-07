@@ -10,6 +10,13 @@ use GuzzleHttp\ClientInterface as HTTPClientInterface;
 interface ClientInterface
 {
     /**
+     * @return Schema
+     * 
+     * @throws Exception\GraphQLException
+     */
+    public function fetchSchema();
+    
+    /**
      * @param string       $operationName
      * @param array|string $args
      *

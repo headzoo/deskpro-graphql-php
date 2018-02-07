@@ -78,6 +78,16 @@ class Client implements ClientInterface
     /**
      * {@inheritdoc}
      */
+    public function fetchSchema()
+    {
+        $schemaFetcher = new SchemaFetcher($this);
+        
+        return $schemaFetcher->fetch();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function createQuery($operationName, $args = [])
     {
         return new QueryBuilder($this, $operationName, $args);
