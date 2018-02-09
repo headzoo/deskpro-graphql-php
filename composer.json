@@ -1,6 +1,8 @@
 {
     "name": "headzoo/graphql-php",
     "description": "PHP library that queries the Deskpro GraphQL API.",
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "type": "library",
     "config": {
         "platform": {
