@@ -1,5 +1,5 @@
 {
-    "name": "deskpro/graphql-php",
+    "name": "headzoo/graphql-php",
     "description": "PHP library that queries the Deskpro GraphQL API.",
     "type": "library",
     "config": {
