@@ -386,7 +386,7 @@ abstract class AbstractBuilder implements BuilderInterface
                 continue;
             }
 
-            $sanitizedFragments[] = sprintf(
+            $sanitizedFragments[$field->getName()] = sprintf(
                 "fragment %s on %s {\n%s%s\n}\n",
                 $field->getName(),
                 $field->getOnType(),
